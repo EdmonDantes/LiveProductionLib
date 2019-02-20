@@ -5,29 +5,14 @@ Please email dantes2104@gmail.com if you would like permission to do something w
 
 package ru.liveproduction.livelib.math;
 
+import ru.liveproduction.livelib.utils.StringUtils;
+
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 
 public class ExpressionObject<T> {
-
-    private static String[] split(String strToSplit, List<String> delimiters) {
-        List<String> arr = new ArrayList<>();
-        int startPosition = 0;
-        for (int i = 0; i < strToSplit.length(); i++) {
-            for (String obj : delimiters) {
-                if (strToSplit.substring(i, Math.min(i + obj.length(), strToSplit.length())).equals(obj)) {
-                    arr.add(strToSplit.substring(startPosition, i));
-                    startPosition = i + obj.length();
-                    i = startPosition - 1;
-                    break;
-                }
-            }
-        }
-        arr.add(strToSplit.substring(Math.max(0, startPosition)));
-        return arr.toArray(new String[0]);
-    }
 
     public static final List<String> operationPriority = Arrays.asList("NOT", "LOG", "SQRT", "POW", "MULT", "DIV", "SUB", "SUM","LOGIC_NOT", "LOGIC_AND", "LOGIC_OR");
     public static final Map<String, List<String>> operationsString = new HashMap<>();
@@ -144,7 +129,7 @@ public class ExpressionObject<T> {
 
         String operationTag = operationsPriority.get(operationsPriority.size() - 1 - operationsOffset);
 
-        String[] highPriorityExpressionsArray = split(expression, operationsStrings.get(operationTag));
+        String[] highPriorityExpressionsArray = StringUtils.split(expression, operationsStrings.get(operationTag));
         Operation<T> executingOperation = operations.get(operationTag);
 
         T result = highPriorityExpressionsArray[0].length() > 0 ? executePrimitiveExpression(highPriorityExpressionsArray[0], nullValue, operationsPriority, operationsStrings, operations, executingValues, operationsOffset + 1) : nullValue;

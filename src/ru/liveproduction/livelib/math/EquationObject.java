@@ -1,4 +1,11 @@
+/*
+Copyright © 2019 Ilya Loginov. All rights reserved.
+Please email dantes2104@gmail.com if you would like permission to do something with the contents of this repository
+*/
+
 package ru.liveproduction.livelib.math;
+
+import ru.liveproduction.livelib.utils.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -19,23 +26,6 @@ public class EquationObject {
     }
 
     private List<Double> variable = new ArrayList<>();
-
-    private static String[] split(String strToSplit, String[] delimiters) {
-        List<String> arr = new ArrayList<>();
-        int startPosition = 0;
-        for (int i = 0; i < strToSplit.length(); i++) {
-            for (String obj : delimiters) {
-                if (strToSplit.substring(i, i + obj.length()).equals(obj)) {
-                    arr.add(strToSplit.substring(startPosition, i));
-                    startPosition = i + obj.length();
-                    i = startPosition - 1;
-                    break;
-                }
-            }
-        }
-        arr.add(strToSplit.substring(startPosition));
-        return arr.toArray(new String[0]);
-    }
 
     private static Set<Long> getDividers(long number) {
         number = number < 0 ? -number : number;
@@ -92,7 +82,7 @@ public class EquationObject {
      * @param variable String variable. (Example: "2x5". 2 - count of x. 5 - power of x)
      */
     public EquationObject(String variable) {
-        String[] tmp = split(variable.toLowerCase(), new String[]{"x"});
+        String[] tmp = StringUtils.split(variable.toLowerCase(), new String[]{"x"});
         Double count = tmp[0].length() > 0 ? new Double(tmp[0]) : 1;
         int power = tmp.length < 2 ? 0 : tmp[1].length() < 1 ? 1 : new Integer(tmp[1]);
 
