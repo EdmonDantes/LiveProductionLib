@@ -29,7 +29,7 @@ public class ExpressionObject<T> {
         return arr.toArray(new String[0]);
     }
 
-    public static final List<String> operationPriority = Arrays.asList("NOT", "LOGIC_NOT", "LOG", "SQRT", "POW", "MULT", "DIV", "SUM", "SUB", "LOGIC_AND", "LOGIC_OR");
+    public static final List<String> operationPriority = Arrays.asList("NOT", "LOG", "SQRT", "POW", "MULT", "DIV", "SUB", "SUM","LOGIC_NOT", "LOGIC_AND", "LOGIC_OR");
     public static final Map<String, List<String>> operationsString = new HashMap<>();
     public static final Map<String, Operation<Integer>> integersOperations = new HashMap<>();
     public static final Map<String, Operation<Double>> doubleOperations = new HashMap<>();
@@ -182,7 +182,6 @@ public class ExpressionObject<T> {
             return executePrimitiveExpression(stringBuilder.toString(), nullValue, operationPriority, operationsString, operations, executingValue, 0);
         }
     }
-
 
     /**
      * Interface for operation with your custom objects
