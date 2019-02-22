@@ -1,29 +1,38 @@
-/*
-Copyright © 2019 Ilya Loginov. All rights reserved.
-Please email dantes2104@gmail.com if you would like permission to do something with the contents of this repository
-*/
+///*
+//Copyright © 2019 Ilya Loginov. All rights reserved.
+//Please email dantes2104@gmail.com if you would like permission to do something with the contents of this repository
+//*/
 
 package ru.liveproduction.livelib.math;
 
 import ru.liveproduction.livelib.utils.StringUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class EquationObject {
-    private static final List<String> operationsPriority = Arrays.asList("MULT", "SUB", "SUM");
-    private static final Map<String, List<String>> operationsStrings = new HashMap<>();
-    private static final Map<String, ExpressionObject.Operation<EquationObject>> operations = new HashMap<>();
-
+    protected static final List<ExpressionObject.Operation<EquationObject>> operations = new ArrayList<>();
     static {
-        operationsStrings.put("MULT", Collections.singletonList("*"));
-        operationsStrings.put("SUM", Collections.singletonList("+"));
-        operationsStrings.put("SUB", Arrays.asList("-", "-"));
-
-        operations.put("MULT", EquationObject::multiply);
-        operations.put("SUM", EquationObject::add);
-        operations.put("SUB", EquationObject::subtract);
+        operations.add(new ExpressionObject.Operation<EquationObject>("MULT", new String[]{"*", "×"}, 2, new ExpressionObject.OperationMethod<EquationObject>() {
+            @Override
+            public EquationObject execute(EquationObject[] args) {
+                return args[0].multiply(args[1]);
+            }
+        }));
+        operations.add(new ExpressionObject.Operation<EquationObject>("SUB", new String[]{"-", "−", "-"}, 2, new ExpressionObject.OperationMethod<EquationObject>() {
+            @Override
+            public EquationObject execute(EquationObject[] args) {
+                return args[0].subtract(args[1]);
+            }
+        }));
+        operations.add(new ExpressionObject.Operation<EquationObject>("SUM", new String[]{"+"}, 2, new ExpressionObject.OperationMethod<EquationObject>() {
+            @Override
+            public EquationObject execute(EquationObject[] args) {
+                return args[0].add(args[1]);
+            }
+        }));
     }
+
+    protected static final ExpressionObject<EquationObject> expression = new ExpressionObject<EquationObject>(EquationObject.class, operations);
 
     private List<Double> variable = new ArrayList<>();
 
@@ -82,9 +91,9 @@ public class EquationObject {
      * @param variable String variable. (Example: "2x5". 2 - count of x. 5 - power of x)
      */
     public EquationObject(String variable) {
-        String[] tmp = StringUtils.split(variable.toLowerCase(), new String[]{"x"});
-        Double count = tmp[0].length() > 0 ? new Double(tmp[0]) : 1;
-        int power = tmp.length < 2 ? 0 : tmp[1].length() < 1 ? 1 : new Integer(tmp[1]);
+        List<String> tmp = StringUtils.split(variable.toLowerCase(), new String[]{"x"});
+        Double count = tmp.get(0).length() > 0 ? new Double(tmp.get(0)) : 1;
+        int power = tmp.size() < 2 ? 0 : tmp.get(1).length() < 1 ? 1 : Integer.valueOf(tmp.get(1));
 
         while (this.variable.size() < power) this.variable.add(0.0);
 
@@ -226,8 +235,8 @@ public class EquationObject {
      */
     public static EquationObject valueOf(String expression) {
         try {
-            return ExpressionObject.createExpression(EquationObject.class).executeCustomFullExpression(expression, new EquationObject("0"), operationsPriority, operationsStrings, operations);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException | ExpressionObject.UserOperationException e) {
+            EquationObject.expression.calc(expression);
+        } catch (ExpressionObject.OperationManager.WrongOperationPriority | ExpressionObject.WrongArgumentsCountOperationException | ExpressionObject.UserMethodErrorException e) {
             System.err.println("Please write developers on email dantes2104@gmail.com");
         }
 

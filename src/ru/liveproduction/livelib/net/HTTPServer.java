@@ -38,7 +38,7 @@ public class HTTPServer {
             DELETE,
             TRACE,
             CONNECT
-        };
+        }
 
         Methods method = null;
         String address = null;
@@ -59,11 +59,11 @@ public class HTTPServer {
                 }
             }
 
-            String[] mainInformation = StringUtils.split(headParts.pollFirst(), new String[]{" "});
-            if (mainInformation.length > 1) {
-                this.method = Methods.valueOf(mainInformation[0]);
-                this.address = mainInformation[1].split(Pattern.quote("?"))[0];
-                String[] query0 = mainInformation[1].split(Pattern.quote("?"));
+            List<String> mainInformation = StringUtils.split(headParts.pollFirst(), new String[]{" "});
+            if (mainInformation.size() > 1) {
+                this.method = Methods.valueOf(mainInformation.get(0));
+                this.address = mainInformation.get(1).split(Pattern.quote("?"))[0];
+                String[] query0 = mainInformation.get(1).split(Pattern.quote("?"));
                 if (query0.length > 1) {
                     String[] query = query0[1].replace(" ", "").split(Pattern.quote("&"));
                     for (var obj : query) {
@@ -73,7 +73,7 @@ public class HTTPServer {
                         }
                     }
                 }
-                https = mainInformation[2].split(Pattern.quote("/"))[0].equals("HTTPS");
+                https = mainInformation.get(2).split(Pattern.quote("/"))[0].equals("HTTPS");
             }
             while (headParts.size() > 0) {
                 String tmp = headParts.pollFirst();

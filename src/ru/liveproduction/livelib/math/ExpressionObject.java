@@ -5,295 +5,445 @@ Please email dantes2104@gmail.com if you would like permission to do something w
 
 package ru.liveproduction.livelib.math;
 
+import ru.liveproduction.livelib.utils.GenericUtils;
 import ru.liveproduction.livelib.utils.StringUtils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.*;
 
 public class ExpressionObject<T> {
 
-    public static final List<String> operationPriority = Arrays.asList("NOT", "LOG", "SQRT", "POW", "MULT", "DIV", "SUB", "SUM","LOGIC_NOT", "LOGIC_AND", "LOGIC_OR");
-    public static final Map<String, List<String>> operationsString = new HashMap<>();
-    public static final Map<String, Operation<Integer>> integersOperations = new HashMap<>();
-    public static final Map<String, Operation<Double>> doubleOperations = new HashMap<>();
-    public static final Map<String, Operation<BigInteger>> bigIntegersOperations = new HashMap<>();
-    public static final Map<String, Operation<BigDecimal>> bigDecimalsOperations = new HashMap<>();
-
-    static {
-        operationsString.put("SUM", Collections.singletonList("+"));
-        operationsString.put("SUB", Arrays.asList("-", "-"));
-        operationsString.put("MULT", Collections.singletonList("*"));
-        operationsString.put("DIV", Arrays.asList("/", ":"));
-        operationsString.put("LOG", Arrays.asList("log", "lg", "l"));
-        operationsString.put("POW", Collections.singletonList("^"));
-        operationsString.put("SQRT", Collections.singletonList("@"));
-        operationsString.put("LOGIC_NOT", Arrays.asList("~", "!"));
-        operationsString.put("LOGIC_AND", Arrays.asList("&&", "&"));
-        operationsString.put("LOGIC_OR", Arrays.asList("||", "|"));
-        operationsString.put("NOT", Collections.singletonList("`"));
-
-        integersOperations.put("SUM", (a, b) -> a + b);
-        integersOperations.put("SUB", (a, b) -> a - b);
-        integersOperations.put("MULT", (a, b) -> a * b);
-        integersOperations.put("DIV", (a, b) -> a / b);
-        integersOperations.put("LOG", (a, b) -> (int) Math.round(Math.log(a) / Math.log(b)));
-        integersOperations.put("POW", (a, b) -> (int) Math.round(Math.pow(a, b)));
-        integersOperations.put("SQRT", (a, b) -> (int) Math.round(Math.pow(a, 1.0 / b)));
-        integersOperations.put("LOGIC_AND", (a, b) -> a & b);
-        integersOperations.put("LOGIC_OR", (a, b) -> a | b);
-        integersOperations.put("LOGIC_NOT", (a, b) -> ~b);
-        integersOperations.put("NOT", (a, b) -> -b);
-
-        bigIntegersOperations.put("SUM", BigInteger::add);
-        bigIntegersOperations.put("SUB", BigInteger::subtract);
-        bigIntegersOperations.put("MULT", BigInteger::multiply);
-        bigIntegersOperations.put("DIV", BigInteger::divide);
-        bigIntegersOperations.put("LOG", (a, b) -> {throw new Exception("This operation not support for this class");});
-        bigIntegersOperations.put("POW", (a, b) -> a.pow(b.intValue()));
-        bigIntegersOperations.put("SQRT", (a, b) -> {throw new Exception("This operation not support for this class");});
-        bigIntegersOperations.put("LOGIC_AND", BigInteger::and);
-        bigIntegersOperations.put("LOGIC_OR", BigInteger::or);
-        bigIntegersOperations.put("LOGIC_NOT", (a, b) -> b.not());
-        bigIntegersOperations.put("NOT", (a, b) -> b.negate());
-
-        bigDecimalsOperations.put("SUM", BigDecimal::add);
-        bigDecimalsOperations.put("SUB", BigDecimal::subtract);
-        bigDecimalsOperations.put("MULT", BigDecimal::multiply);
-        bigDecimalsOperations.put("DIV", BigDecimal::divide);
-        bigDecimalsOperations.put("LOG", (a, b) -> {throw new Exception("This operation not support for this class");});
-        bigDecimalsOperations.put("POW", (a, b) -> a.pow(b.intValue()));
-        bigDecimalsOperations.put("SQRT", (a, b) -> {throw new Exception("This operation not support for this class");});
-        bigDecimalsOperations.put("LOGIC_AND", (a, b) -> new BigDecimal(a.toBigInteger().and(b.toBigInteger())));
-        bigDecimalsOperations.put("LOGIC_OR", (a, b) -> new BigDecimal(a.toBigInteger().or(b.toBigInteger())));
-        bigDecimalsOperations.put("LOGIC_NOT", (a, b) -> new BigDecimal(b.toBigInteger().not()));
-        bigDecimalsOperations.put("NOT", (a, b) -> b.negate());
-
-        doubleOperations.put("SUM", (a, b) -> a + b);
-        doubleOperations.put("SUB", (a, b) -> a - b);
-        doubleOperations.put("MULT", (a, b) -> a * b);
-        doubleOperations.put("DIV", (a, b) -> a / b);
-        doubleOperations.put("LOG", (a, b) -> Math.log(a) / Math.log(b));
-        doubleOperations.put("POW", Math::pow);
-        doubleOperations.put("SQRT", (a, b) -> Math.pow(a, 1.0 / b));
-        doubleOperations.put("LOGIC_AND", (a, b) -> (double) (Math.round(a) & Math.round(b)));
-        doubleOperations.put("LOGIC_OR", (a, b) -> (double) (Math.round(a) | Math.round(b)));
-        doubleOperations.put("LOGIC_NOT", (a, b) -> (double) (~Math.round(b)));
-        doubleOperations.put("NOT", (a, b) -> -b);
+    public interface OperationMethod<K> {
+        K execute(K[] args);
     }
 
-    private Class<T> clazz;
-    private ExpressionObject(Class<T> clazz){
-        this.clazz = clazz;
-    }
+    public static class UserMethodErrorException extends Exception {
+        protected String operationTag;
+        protected int countArgs;
+        protected Exception exception;
 
-    public static class UserOperationException extends Exception {
-        private String operationTag;
-        private String allExpression = null;
-        private Exception exception;
-
-        public UserOperationException(String operationTag, Exception exception){
-            super();
+        public UserMethodErrorException(String operationTag, int countArgs, Exception exception) {
             this.operationTag = operationTag;
+            this.countArgs = countArgs;
             this.exception = exception;
+        }
+
+        public int getCountArgs() {
+            return countArgs;
         }
 
         public String getOperationTag() {
             return operationTag;
         }
 
-        public String getAllExpression() {
-            return allExpression;
+        public Exception getException() {
+            return exception;
+        }
+    }
+
+    public static class WrongArgumentsCountOperationException extends Exception {
+        protected int need_count;
+        protected int real_count;
+
+        public WrongArgumentsCountOperationException(int need_count, int real_count) {
+            this.need_count = need_count;
+            this.real_count = real_count;
         }
 
-        public void setAllExpression(String allExpression) {
-            this.allExpression = allExpression;
+        public int getRealArgumentsCount() {
+            return real_count;
+        }
+
+        public int getNeedArgumentsCount() {
+            return need_count;
+        }
+    }
+
+    public static class Operation<K> {
+        protected String operationTag;
+        protected List<String> operationsString;
+        protected int countArgs;
+        protected boolean suffix;
+        protected OperationMethod<K> method;
+
+        private Operation() {
+        }
+
+        public Operation(String operationTag, String[] operationsString, int countArgs, OperationMethod<K> method) {
+            this.operationTag = operationTag;
+            this.countArgs = countArgs;
+            this.method = method;
+            this.operationsString = Arrays.asList(operationsString);
+            suffix = false;
+        }
+
+        public Operation(String operationTag, List<String> operationsString, int countArgs, OperationMethod<K> method) {
+            this.operationTag = operationTag;
+            this.countArgs = countArgs;
+            this.method = method;
+            this.operationsString = operationsString;
+            suffix = false;
+        }
+
+        public Operation(String operationTag, String[] operationsString, int countArgs, boolean suffix, OperationMethod<K> method) {
+            this.operationTag = operationTag;
+            this.countArgs = countArgs;
+            this.suffix = suffix;
+            this.method = method;
+            this.operationsString = Arrays.asList(operationsString);
+        }
+
+        public Operation(String operationTag, List<String> operationsString, int countArgs, boolean suffix, OperationMethod<K> method) {
+            this.operationTag = operationTag;
+            this.countArgs = countArgs;
+            this.suffix = suffix;
+            this.method = method;
+            this.operationsString = operationsString;
+        }
+
+        public int getCountArgs() {
+            return countArgs;
+        }
+
+        public String getOperationTag() {
+            return operationTag;
         }
 
         public void setOperationTag(String operationTag) {
             this.operationTag = operationTag;
         }
 
-        @Override
-        public String toString() {
-            return "UserOperationException:\nOperation Tag: " + operationTag + "\nString Expression: " + allExpression + "\nException: \n" + exception.toString();
+        public K execute(K[] args) throws WrongArgumentsCountOperationException, UserMethodErrorException {
+            if (args.length == this.countArgs) {
+                try {
+                    return method.execute(args);
+                }catch (Exception e) {
+                    throw new UserMethodErrorException(operationTag, countArgs, e);
+                }
+            } else throw new WrongArgumentsCountOperationException(this.countArgs, args.length);
         }
     }
 
+    public static class OperationManager<K> {
 
-    private T executePrimitiveExpression(String expression, T nullValue, List<String> operationsPriority, Map<String, List<String>> operationsStrings, Map<String, Operation<T>> operations, List<T> executingValues, int operationsOffset) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, UserOperationException {
-        if (expression.startsWith("${") && expression.endsWith("}")) return executingValues.get(Integer.valueOf(expression.substring(2, expression.length() - 1)));
+        public static class WrongOperationPriority extends Exception {
+            protected int maxPriority;
+            protected int realPriority;
 
-        if (operationsOffset > operationsPriority.size() - 1 || expression.length() < 1) return clazz.getConstructor(String.class).newInstance(expression);
+            public WrongOperationPriority(int maxPriority, int realPriority) {
+                this.maxPriority = maxPriority;
+                this.realPriority = realPriority;
+            }
 
-        String operationTag = operationsPriority.get(operationsPriority.size() - 1 - operationsOffset);
+            public int getMaxPriority() {
+                return maxPriority;
+            }
 
-        String[] highPriorityExpressionsArray = StringUtils.split(expression, operationsStrings.get(operationTag));
-        Operation<T> executingOperation = operations.get(operationTag);
-
-        T result = highPriorityExpressionsArray[0].length() > 0 ? executePrimitiveExpression(highPriorityExpressionsArray[0], nullValue, operationsPriority, operationsStrings, operations, executingValues, operationsOffset + 1) : nullValue;
-        for (int i = 1; i < highPriorityExpressionsArray.length; i++) {
-            try {
-                result = executingOperation.execute(result, highPriorityExpressionsArray[i].length() > 0 ? executePrimitiveExpression(highPriorityExpressionsArray[i], nullValue, operationsPriority, operationsStrings, operations, executingValues, operationsOffset + 1) : nullValue);
-            } catch (Exception e) {
-                throw new UserOperationException(operationTag, e);
+            public int getRealPriority() {
+                return realPriority;
             }
         }
-        return result;
+
+        protected Operation<K>[] operations;
+
+        private OperationManager() {
+        }
+
+        public OperationManager(Operation<K>[] operations) {
+            this.operations = operations;
+        }
+
+        public OperationManager(List<Operation<K>> operations) {
+            if (operations.size() > 0)
+                this.operations = operations.toArray((Operation<K>[]) Array.newInstance(operations.get(0).getClass(), operations.size()));
+            else
+                this.operations = new Operation[0];
+        }
+
+        protected Operation<K> getOperationFromPriority(int operationPriority) throws WrongOperationPriority {
+            if (operationPriority < operations.length) return operations[operationPriority];
+            else throw new WrongOperationPriority(operations.length - 1, operationPriority);
+        }
+
+        public int getCountArgs(int operationPriority) throws WrongOperationPriority {
+            return getOperationFromPriority(operationPriority).countArgs;
+        }
+
+        public int getCountOperations() {
+            return operations.length;
+        }
+
+        public K executeOperation(int operationPriority, K[] args) throws WrongOperationPriority, WrongArgumentsCountOperationException, UserMethodErrorException {
+            return getOperationFromPriority(operationPriority).execute(args);
+        }
+
+        public boolean isThisOperation(int operationPriority, String operationString) throws WrongOperationPriority {
+            return getOperationFromPriority(operationPriority).operationsString.contains(operationString);
+        }
+
+        public boolean isSuffix(int operationPriority) throws WrongOperationPriority {
+            return getOperationFromPriority(operationPriority).suffix;
+        }
     }
 
-    private T executeFullExpression(String expression, T nullValue, List<String> operationPriority, Map<String, List<String>> operationsString, Map<String, Operation<T>> operations, List<T> executingValue) throws InvocationTargetException, NoSuchMethodException, UserOperationException, InstantiationException, IllegalAccessException {
+    protected OperationManager<T> operationsManager;
+    protected Class<T> _class;
+    protected List<String> allOperationsString;
+
+    private static final String startVariableString = "ǄǼ";
+    private static final String endVariableString = "Ǆ";
+    private static final String nullValue = "0";
+
+    protected static String getStartVariableString() {
+        return startVariableString;
+    }
+
+    protected static String getEndVariableString() {
+        return endVariableString;
+    }
+
+    protected static String getNullValueString() {
+        return nullValue;
+    }
+
+    public ExpressionObject(Class<T> _class, Operation<T>[] operations) {
+        this._class = _class;
+        this.operationsManager = new OperationManager<T>(operations);
+        this.allOperationsString = new LinkedList<>();
+        for (var operation : operations) {
+            allOperationsString.addAll(operation.operationsString);
+        }
+    }
+
+    public ExpressionObject(Class<T> _class, List<Operation<T>> operations) {
+        this._class = _class;
+        this.operationsManager = new OperationManager<T>(operations);
+        this.allOperationsString = new LinkedList<>();
+        for (var operation : operations) {
+            allOperationsString.addAll(operation.operationsString);
+        }
+    }
+
+    public ExpressionObject(Class<T> _class, OperationManager<T> operationsManager) {
+        this._class = _class;
+        this.operationsManager = operationsManager;
+        this.allOperationsString = new LinkedList<>();
+        for (var operation : operationsManager.operations) {
+            allOperationsString.addAll(operation.operationsString);
+        }
+    }
+
+    protected T calculatePrimitiveExpression(String expression, List<T> executingValues) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, WrongArgumentsCountOperationException, OperationManager.WrongOperationPriority, UserMethodErrorException {
+        if (expression.startsWith(getStartVariableString()) && expression.endsWith(getEndVariableString()))
+            return executingValues.get(Integer.valueOf(expression.substring(2, expression.length() - 1)));
+
+        List<Object> expressionParts = new ArrayList<>(StringUtils.splitWithSave(expression, this.allOperationsString));
+
+        for (int i = 0; i < this.operationsManager.getCountOperations() && expressionParts.size() > 1; i++) {
+            for (int j = 0; j < expressionParts.size(); j++) {
+                if (expressionParts.get(j) instanceof String) {
+                    if (this.operationsManager.isThisOperation(i, (String) expressionParts.get(j))) {
+                        Object first = j > 0 && !this.allOperationsString.contains(expressionParts.get(j - 1)) ? expressionParts.get(j - 1) : null;
+                        Object second = j + 1 < expressionParts.size() && !this.allOperationsString.contains(expressionParts.get(j + 1)) ? expressionParts.get(j + 1) : null;
+
+                        if (this.operationsManager.getCountArgs(i) == 1 && (first == null || second == null)) {
+                            T newValue;
+                            if (this.operationsManager.isSuffix(i)) {
+                                newValue = first instanceof String ? this.operationsManager.executeOperation(i, GenericUtils.createGenericArrayWithValues(_class, GenericUtils.createGenericFrom(_class, first))) : this.operationsManager.executeOperation(i, GenericUtils.createGenericArrayWithValues(_class, (T) first));
+                                expressionParts.set(j, newValue);
+                                expressionParts.remove(j - 1);
+                            } else {
+                                newValue = second instanceof String ? this.operationsManager.executeOperation(i, GenericUtils.createGenericArrayWithValues(_class, GenericUtils.createGenericFrom(_class, second))) : this.operationsManager.executeOperation(i, GenericUtils.createGenericArrayWithValues(_class, (T) second));
+                                expressionParts.remove(j);
+                                expressionParts.set(j, newValue);
+                            }
+                        } else if (this.operationsManager.getCountArgs(i) == 2 && first != null && second != null) {
+                            T firstT = first instanceof String ? this._class.getConstructor(String.class).newInstance(first) : (T) first;
+                            T secondT = second instanceof String ? this._class.getConstructor(String.class).newInstance(second) : (T) second;
+                            expressionParts.remove(j);
+                            expressionParts.set(j, this.operationsManager.executeOperation(i, GenericUtils.createGenericArrayWithValues(_class, firstT, secondT)));
+                            expressionParts.remove(j - 1);
+                            j--;
+                        } else if (i == this.operationsManager.getCountOperations() - 1 && expressionParts.size() > 1) {
+                            if (first != null) {
+                                expressionParts.remove(j - 1);
+                                if (second != null) expressionParts.remove(j - 1);
+                                expressionParts.set(j - 1, getNullValueString());
+                            } else if (second != null) {
+                                expressionParts.remove(j + 1);
+                                expressionParts.set(j, getNullValueString());
+                            } else {
+                                expressionParts.set(j, getNullValueString());
+                            }
+                            i = 0;
+                        }
+                    } else {
+                        if (((String) expressionParts.get(j)).length() < 1) expressionParts.remove(j);
+                        if (((String) expressionParts.get(j)).startsWith(getStartVariableString()) && ((String) expressionParts.get(j)).endsWith(getEndVariableString()))
+                            expressionParts.set(j, executingValues.get(Integer.valueOf(((String) expressionParts.get(j)).substring(2, ((String) expressionParts.get(j)).length() - 1))));
+                    }
+                }
+            }
+        }
+        return (T) expressionParts.get(0);
+    }
+
+    protected T calculateFullExpression(String expression, List<T> executingValue) throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException, WrongArgumentsCountOperationException, OperationManager.WrongOperationPriority, UserMethodErrorException {
         StringBuilder stringBuilder = new StringBuilder();
         int prev_end_index = 0;
         int start_index = expression.indexOf("(");
         int end_index = expression.indexOf(")");
         if (start_index == end_index) {
-            return executePrimitiveExpression(expression, nullValue, operationPriority, operationsString, operations, executingValue, 0);
-        }else {
+            return calculatePrimitiveExpression(expression, executingValue);
+        } else {
             while (start_index != end_index) {
                 int nextIndex = expression.indexOf("(", start_index + 1);
                 while (nextIndex > -1 && nextIndex < end_index) {
                     end_index = expression.indexOf(")", end_index + 1);
                     nextIndex = expression.indexOf("(", nextIndex + 1);
                 }
-                T tmpValue = executeFullExpression(expression.substring(start_index + 1, end_index), nullValue, operationPriority, operationsString, operations, executingValue);
-                stringBuilder.append(expression, prev_end_index, start_index).append("${").append(executingValue.size()).append("}").append(expression, end_index + 1, nextIndex > -1 ? nextIndex : expression.length());
+                T tmpValue = calculateFullExpression(expression.substring(start_index + 1, end_index), executingValue);
+                stringBuilder.append(expression, prev_end_index, start_index).append(getStartVariableString()).append(executingValue.size()).append(getEndVariableString()).append(expression, end_index + 1, nextIndex > -1 ? nextIndex : expression.length());
                 executingValue.add(tmpValue);
                 start_index = nextIndex;
                 prev_end_index = end_index + 1;
                 end_index = start_index > -1 ? expression.indexOf(")", start_index + 1) : -1;
             }
-            return executePrimitiveExpression(stringBuilder.toString(), nullValue, operationPriority, operationsString, operations, executingValue, 0);
+            return calculatePrimitiveExpression(stringBuilder.toString(), executingValue);
         }
     }
 
-    /**
-     * Interface for operation with your custom objects
-     * @param <K> - Your custom class
-     */
-    public interface Operation<K> {
-
-        /**
-         *
-         * @param a First your custom object
-         * @param b Second your custom object
-         * @return You custom object
-         * @throws Exception
-         */
-        K execute(K a, K b) throws Exception;
-    }
-
-    /**
-     * Create ExpressionObject witch can work this your custom object
-     *
-     * Your custom class must have constructor with String class
-     * @param clazz Reference from your custom object or class
-     * @param <K> Your custom class
-     * @return ExpressionObject/<K/>
-     */
-    public static <K> ExpressionObject<K> createExpression(Class<K> clazz){
-        return new ExpressionObject<K>(clazz);
-    }
-
-    /**
-     * Create ExpressionObject witch can work this your custom object.
-     *
-     * Your custom class must have constructor with String class
-     * @param obj Your custom object
-     * @param <K> Your custom class
-     * @return ExpressionObject/<K/>
-     */
-    public static <K> ExpressionObject<K> createExpression(K obj){
-        return new ExpressionObject<K>((Class<K>) obj.getClass());
-    }
-
-    /**
-     * Execute your custom expression with your custom setting with your custom object
-     * @param expression String expression
-     * @param nullValue Value equals 0 in integer
-     * @param operationsPriority List of operations tags order by priority. 0 - max priority. Last - min priority.
-     * @param operationsStrings Map of (Operations tags) => (List operations in string expression)
-     * @param operations Map of (Operations tags) => (Operations interface)
-     * @return Value of your custom class
-     * @throws Exception
-     */
-    public T executeCustomFullExpression(String expression, T nullValue, List<String> operationsPriority, Map<String, List<String>> operationsStrings, Map<String, Operation<T>> operations) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, UserOperationException {
+    public T calc(String expression) throws WrongArgumentsCountOperationException, OperationManager.WrongOperationPriority, UserMethodErrorException {
         try {
-            return executeFullExpression(expression.replace(" ", ""), nullValue, operationsPriority, operationsStrings, operations, new ArrayList<>());
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
-            System.err.println("Please create constructor with String argument in your custom class");
-            throw e;
-        } catch (UserOperationException e) {
-            e.setAllExpression(expression);
+            return calculateFullExpression(expression.replace(" ", ""), new ArrayList<>());
+        } catch (InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (OperationManager.WrongOperationPriority | WrongArgumentsCountOperationException | UserMethodErrorException e) {
             throw e;
         }
+        return null;
     }
 
-    /**
-     * Execute expression with Integer class
-     * @param expression String expression
-     * @return Integer value
-     */
-    public static Integer execInteger(String expression) throws UserOperationException {
-        try {
-            return createExpression(Integer.class).executeCustomFullExpression(expression, 0, operationPriority, operationsString, integersOperations);
-        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            System.err.println("Please write developers on email dantes2104@gmail.com");
-        } catch (UserOperationException e) {
-            throw e;
-        }
-        return 0;
+
+    protected static final List<ExpressionObject.Operation<Integer>> integerOperations = new ArrayList<>();
+
+    static {
+        integerOperations.add(new Operation<Integer>("NOT", new String[]{"-", "−", "-"}, 1, new ExpressionObject.OperationMethod<Integer>() {
+            @Override
+            public Integer execute(Integer[] args) {
+                return -args[0];
+            }
+        }));
+        integerOperations.add(new Operation<Integer>("POW", new String[]{"^"}, 2, new OperationMethod<Integer>() {
+            @Override
+            public Integer execute(Integer[] args) {
+                return (int) Math.pow(args[0], args[1]);
+            }
+        }));
+        integerOperations.add(new Operation<Integer>("MULT", new String[]{"*", "×"}, 2, new ExpressionObject.OperationMethod<Integer>() {
+            @Override
+            public Integer execute(Integer[] args) {
+                return args[0] * args[1];
+            }
+        }));
+        integerOperations.add(new Operation<Integer>("DIV", new String[]{"÷", "/", ":"}, 2, new ExpressionObject.OperationMethod<Integer>() {
+            @Override
+            public Integer execute(Integer[] args) {
+                return args[0] / args[1];
+            }
+        }));
+        integerOperations.add(new Operation<Integer>("SUB", new String[]{"-", "−", "-"}, 2, new ExpressionObject.OperationMethod<Integer>() {
+            @Override
+            public Integer execute(Integer[] args) {
+                return args[0] - args[1];
+            }
+        }));
+        integerOperations.add(new Operation<Integer>("SUM", new String[]{"+"}, 2, new ExpressionObject.OperationMethod<Integer>() {
+            @Override
+            public Integer execute(Integer[] args) {
+                return args[0] + args[1];
+            }
+        }));
+
     }
 
-    /**
-     * Execute expression with BigInteger class
-     * @param expression String expression
-     * @return BigInteger value
-     */
-    public static BigInteger execBigInteger(String expression) throws UserOperationException {
+    protected static final ExpressionObject<Integer> integerExpressionObject = new ExpressionObject<Integer>(Integer.class, integerOperations);
+
+    public static Integer calcInteger(String expression) {
         try {
-            return createExpression(BigInteger.class).executeCustomFullExpression(expression, new BigInteger("0"), operationPriority, operationsString, bigIntegersOperations);
-        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            System.err.println("Please write developers on email dantes2104@gmail.com");
-        } catch (UserOperationException e) {
-            throw e;
+            return integerExpressionObject.calc(expression);
+        } catch (WrongArgumentsCountOperationException e) {
+            System.err.println("Please contact with developers. Special Error #1");
+            e.printStackTrace();
+        } catch (OperationManager.WrongOperationPriority wrongOperationPriority) {
+            System.err.println("Please contact with developers. Special Error #2");
+            wrongOperationPriority.printStackTrace();
+        } catch (UserMethodErrorException e) {
+            System.err.println("Please contact with developers. Special Error #3");
+            e.printStackTrace();
         }
-        return new BigInteger("0");
+        return null;
     }
 
-    /**
-     * Execute expression with Double class
-     * @param expression String expression
-     * @return Double value
-     */
-    public static Double execDouble(String expression) throws UserOperationException {
-        try {
-            return createExpression(Double.class).executeCustomFullExpression(expression, new Double("0"), operationPriority, operationsString, doubleOperations);
-        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
-            System.err.println("Please write developers on email dantes2104@gmail.com");
-        } catch (UserOperationException e) {
-            throw e;
-        }
 
-        return 0.0;
+    protected static final List<ExpressionObject.Operation<Double>> doubleOperations = new ArrayList<>();
+
+    static {
+        doubleOperations.add(new Operation<Double>("NOT", new String[]{"-", "−", "-"}, 1, new ExpressionObject.OperationMethod<Double>() {
+            @Override
+            public Double execute(Double[] args) {
+                return -args[0];
+            }
+        }));
+        doubleOperations.add(new Operation<Double>("POW", new String[]{"^"}, 2, new OperationMethod<Double>() {
+            @Override
+            public Double execute(Double[] args) {
+                return Math.pow(args[0], args[1]);
+            }
+        }));
+        doubleOperations.add(new Operation<Double>("MULT", new String[]{"*", "×"}, 2, new ExpressionObject.OperationMethod<Double>() {
+            @Override
+            public Double execute(Double[] args) {
+                return args[0] * args[1];
+            }
+        }));
+        doubleOperations.add(new Operation<Double>("DIV", new String[]{"÷", "/", ":"}, 2, new ExpressionObject.OperationMethod<Double>() {
+            @Override
+            public Double execute(Double[] args) {
+                return args[0] / args[1];
+            }
+        }));
+        doubleOperations.add(new Operation<Double>("SUB", new String[]{"-", "−", "-"}, 2, new ExpressionObject.OperationMethod<Double>() {
+            @Override
+            public Double execute(Double[] args) {
+                return args[0] - args[1];
+            }
+        }));
+        doubleOperations.add(new Operation<Double>("SUM", new String[]{"+"}, 2, new ExpressionObject.OperationMethod<Double>() {
+            @Override
+            public Double execute(Double[] args) {
+                return args[0] + args[1];
+            }
+        }));
+
     }
 
-    /**
-     * Execute expression with BigDecimal class
-     * @param expression String expression
-     * @return BigDecimal value
-     */
-    public static BigDecimal execBigDecimal(String expression) throws UserOperationException, InvocationTargetException {
-        try {
-            return createExpression(BigDecimal.class).executeCustomFullExpression(expression, new BigDecimal("0"), operationPriority, operationsString, bigDecimalsOperations);
-        } catch (NoSuchMethodException | IllegalAccessException | InstantiationException e) {
-            System.err.println("Please write developers on email dantes2104@gmail.com");
-        } catch (UserOperationException e) {
-            throw e;
-        }
+    protected static final ExpressionObject<Double> doubleExpressionObject = new ExpressionObject<Double>(Double.class, doubleOperations);
 
-        return new BigDecimal("0");
+    public static Double calcDouble(String expression) {
+        try {
+            return doubleExpressionObject.calc(expression.replace(",", "."));
+        } catch (WrongArgumentsCountOperationException e) {
+            System.err.println("Please contact with developers. Special Error #1");
+            e.printStackTrace();
+        } catch (OperationManager.WrongOperationPriority wrongOperationPriority) {
+            System.err.println("Please contact with developers. Special Error #2");
+            wrongOperationPriority.printStackTrace();
+        } catch (UserMethodErrorException e) {
+            System.err.println("Please contact with developers. Special Error #3");
+            e.printStackTrace();
+        }
+        return null;
     }
 }
-

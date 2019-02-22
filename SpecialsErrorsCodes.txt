@@ -1,0 +1,2 @@
+#1 - Error with check operations string in calculatePrimitiveExpression(String, List<T>);
+#2 - in calculatePrimitiveExpression(String, List<T>);
