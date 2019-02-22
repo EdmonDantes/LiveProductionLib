@@ -1,4 +1,4 @@
-#LiveProductionLib
+# LiveProductionLib
 
 ## Table of contents
 - [Math](#Math)
@@ -8,7 +8,7 @@
 ## Math
 ### ExpressionObject
 This class created for fast and easy calculate different expression
-#####How to use
+##### How to use
 ```java
 List<ExpressionObject.Operation<YOUR_CLASS>> list = new ArrayList<>();
 list.add(new ExpressionObject.Operation<YOUR_CLASS>(OPERATION_TAG, new String[]{OPEREATION_STRINGS_IN_EXPRESSION}, COUNT_ARGS, new ExpressionObject.OperationMethod<YOUR_CLASS>() {
@@ -30,7 +30,7 @@ ExpressionObject.calcDouble("1.2 + 5.8");
 ```
 ### EquationObject
 This class create for solving equations
-#####How to use
+##### How to use
 ```java
 Set<Double> set = EquationObject.valueOf("2x2 - 18").getX();
 ```
