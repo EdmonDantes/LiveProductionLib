@@ -92,7 +92,7 @@ public class EquationObject {
      */
     public EquationObject(String variable) {
         List<String> tmp = StringUtils.split(variable.toLowerCase(), new String[]{"x"});
-        Double count = tmp.get(0).length() > 0 ? new Double(tmp.get(0)) : 1;
+        Double count = tmp.get(0).length() > 0 ? Double.valueOf(tmp.get(0)) : 1;
         int power = tmp.size() < 2 ? 0 : tmp.get(1).length() < 1 ? 1 : Integer.valueOf(tmp.get(1));
 
         while (this.variable.size() < power) this.variable.add(0.0);
@@ -236,7 +236,7 @@ public class EquationObject {
     public static EquationObject valueOf(String expression) {
         try {
             EquationObject.expression.calc(expression);
-        } catch (ExpressionObject.OperationManager.WrongOperationPriority | ExpressionObject.WrongArgumentsCountOperationException | ExpressionObject.UserMethodErrorException e) {
+        } catch (ExpressionObject.WrongOperationPriority | ExpressionObject.WrongCountOperationArgumentsException | ExpressionObject.UserMethodException e) {
             System.err.println("Please write developers on email dantes2104@gmail.com");
         }
 

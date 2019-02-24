@@ -20,14 +20,25 @@ public final class GenericUtils {
         return _class.getConstructor(value.getClass()).newInstance(value);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T[] createGenericArray(Class<T> _class, int length) {
         return (T[]) Array.newInstance(_class, length);
     }
 
+    @SafeVarargs
     public static <T> T[] createGenericArrayWithValues(Class<T> _class, T ...args) {
         T[] result = createGenericArray(_class, args.length);
         for (int i = 0; i < args.length; i++) {
             result[i] = args[i];
+        }
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T[] createGenericArrayFromObjectArray(Class<T> _class, Object[] array){
+        T[] result = createGenericArray(_class, array.length);
+        for (int i = 0; i < array.length; i++){
+            result[i] = (T) array[i];
         }
         return result;
     }
