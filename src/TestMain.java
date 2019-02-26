@@ -8,9 +8,6 @@ import ru.liveproduction.livelib.math.ExpressionObject;
 public class TestMain {
 
     public static void main(String[] args) throws ExpressionObject.WrongCountOperationArgumentsException, ExpressionObject.WrongOperationPriority {
-        var test = ExpressionObject.calcDouble("2l2");
-
-        System.out.println(test);
         System.out.println("---------------");
     }
 }
