@@ -3,28 +3,28 @@
 //Please email dantes2104@gmail.com if you would like permission to do something with the contents of this repository
 //*/
 
-package ru.liveproduction.livelib.math;
+package ru.liveproduction.livelib.math.expression;
 
 import ru.liveproduction.livelib.utils.StringUtils;
 
 import java.util.*;
 
 public class EquationObject {
-    protected static final List<ExpressionObject.Operation<EquationObject>> operations = new ArrayList<>();
+    protected static final List<Operation<EquationObject>> operations = new ArrayList<>();
     static {
-        operations.add(new ExpressionObject.Operation<EquationObject>("MULT", new String[]{"*", "×"}, 2, new ExpressionObject.OperationMethod<EquationObject>() {
+        operations.add(new Operation<EquationObject>("MULT", new String[]{"*", "×"}, 2, new OperationFunction<EquationObject>() {
             @Override
             public EquationObject execute(EquationObject[] args) {
                 return args[0].multiply(args[1]);
             }
         }));
-        operations.add(new ExpressionObject.Operation<EquationObject>("SUB", new String[]{"-", "−", "-"}, 2, new ExpressionObject.OperationMethod<EquationObject>() {
+        operations.add(new Operation<EquationObject>("SUB", new String[]{"-", "−", "-"}, 2, new OperationFunction<EquationObject>() {
             @Override
             public EquationObject execute(EquationObject[] args) {
                 return args[0].subtract(args[1]);
             }
         }));
-        operations.add(new ExpressionObject.Operation<EquationObject>("SUM", new String[]{"+"}, 2, new ExpressionObject.OperationMethod<EquationObject>() {
+        operations.add(new Operation<EquationObject>("SUM", new String[]{"+"}, 2, new OperationFunction<EquationObject>() {
             @Override
             public EquationObject execute(EquationObject[] args) {
                 return args[0].add(args[1]);
@@ -32,7 +32,7 @@ public class EquationObject {
         }));
     }
 
-    protected static final ExpressionObject<EquationObject> expression = new ExpressionObject<EquationObject>(EquationObject.class, operations);
+    protected static final ExpressionObject<EquationObject> expression = new ExpressionObject<EquationObject>(new OperationManager<>(operations), EquationObject.class);
 
     private List<Double> variable = new ArrayList<>();
 
@@ -235,8 +235,8 @@ public class EquationObject {
      */
     public static EquationObject valueOf(String expression) {
         try {
-            EquationObject.expression.calc(expression);
-        } catch (ExpressionObject.WrongOperationPriority | ExpressionObject.WrongCountOperationArgumentsException | ExpressionObject.UserMethodException e) {
+            EquationObject.expression.execute(expression);
+        } catch (WrongCountOperationArgumentsException | UserMethodException e) {
             System.err.println("Please write developers on email dantes2104@gmail.com");
         }
 

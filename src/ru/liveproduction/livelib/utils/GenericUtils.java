@@ -16,8 +16,20 @@ public final class GenericUtils {
         return _class.getConstructor().newInstance();
     }
 
-    public static <T, K> T createGenericFrom(Class<T> _class, K value) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        return _class.getConstructor(value.getClass()).newInstance(value);
+    public static <T, K> T createGenericFrom(Class<T> _class, K value) {
+        try {
+            return _class.getConstructor(value.getClass()).newInstance(value);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            try {
+                return (T) _class.getMethod("valueOf", value.getClass()).invoke(null, value);
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
+                try {
+                    return (T) _class.getMethod("valueOf", (Class<?>) value.getClass().getField("TYPE").get(null)).invoke(null, value);
+                } catch (IllegalAccessException | InvocationTargetException | NoSuchFieldException | NoSuchMethodException e2) {
+                    return null;
+                }
+            }
+        }
     }
 
     @SuppressWarnings("unchecked")

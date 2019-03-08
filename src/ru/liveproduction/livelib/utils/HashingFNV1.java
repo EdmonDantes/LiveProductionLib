@@ -2,7 +2,7 @@
 Copyright © 2019 Ilya Loginov. All rights reserved.
 Please email dantes2104@gmail.com if you would like permission to do something with the contents of this repository
 */
-package ru.liveproduction.livelib.math;
+package ru.liveproduction.livelib.utils;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
