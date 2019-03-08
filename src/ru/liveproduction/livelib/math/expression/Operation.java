@@ -3,7 +3,7 @@ package ru.liveproduction.livelib.math.expression;
 import java.util.*;
 
 /**
- *
+ * Class for operation with your class
  * @param <K> Your class
  */
 public class Operation<K> {
@@ -85,14 +85,29 @@ public class Operation<K> {
         this(operationTag, Collections.singleton(operationStringSynonym), 2, operationFunction, ";", false);
     }
 
+    /**
+     * @return Operation tag
+     */
     public String getOperationTag() {
         return operationTag;
     }
 
+    /**
+     * Check string in array of string synonyms
+     * @param stringSynonym Your string synonym
+     * @return True if this operation have this stringSynonym, else False
+     */
     public boolean haveStringSynonym(String stringSynonym) {
         return operationStringSynonyms.contains(stringSynonym);
     }
 
+    /**
+     * Check string synonyms on interval of string
+     * @param str String
+     * @param startIndex First index
+     * @param lastIndex Last index. (Search will be while INDEX <= ${lastIndex}
+     * @return -1 if interval hasn`t string synonym, else last index of string synonym in interval
+     */
     public int indexOfStringSynonymInString(String str, int startIndex, int lastIndex) {
         for (int i = startIndex + 1; i <= lastIndex && i <= str.length() && i - startIndex <= maxLengthOfStringSynonyms; i++) {
             if (haveStringSynonym(str.substring(startIndex, i))) return i;
@@ -101,34 +116,73 @@ public class Operation<K> {
         return -1;
     }
 
+    /**
+     * Check string synonyms on interval of string
+     * @param str String
+     * @param startIndex First index
+     * @return -1 if interval hasn`t string synonym, else last index of string synonym in interval
+     */
     public int indexOfStringSynonymInString(String str, int startIndex) {
         return indexOfStringSynonymInString(str, startIndex, str.length());
     }
 
+    /**
+     * Check string synonyms in start of string
+     * @param str String
+     * @return -1 if interval hasn`t string synonym, else last index of string synonym in interval
+     */
     public int indexOfStringSynonymInString(String str){
         return indexOfStringSynonymInString(str, 0);
     }
 
+    /**
+     * Check string synonyms on interval of string
+     * @param str String
+     * @param startIndex First index
+     * @param lastIndex Last index. (Search will be while INDEX <= ${lastIndex}
+     * @return FALSE if interval hasn`t string synonym, else return TRUE
+     */
     public boolean haveStringSynonymInString(String str, int startIndex, int lastIndex) {
         return indexOfStringSynonymInString(str, startIndex, lastIndex) > -1;
     }
 
+    /**
+     * Check string synonyms on interval of string
+     * @param str String
+     * @param startIndex First index
+     * @return FALSE if interval hasn`t string synonym, else return TRUE
+     */
     public boolean haveStringSynonymInString(String str, int startIndex) {
         return haveStringSynonymInString(str, startIndex, str.length());
     }
 
+    /**
+     * Check string synonyms in start of string
+     * @param str String
+     * @return FALSE if interval hasn`t string synonym, else return TRUE
+     */
     public boolean haveStringSynonymInString(String str) {
         return haveStringSynonymInString(str, 0);
     }
 
+    /**
+     * @return Maximum length of all strings` synonyms
+     */
     public int getMaxLengthOfStringSynonyms() {
         return maxLengthOfStringSynonyms;
     }
 
+    /**
+     * @return Get count operation`s arguments
+     */
     public int getCountOperationArgs() {
         return countOperationArgs;
     }
 
+    /**
+     * ONLY FOR 3 or > -args operations
+     * @return Separator for operation`s arguments
+     */
     public String getArgumentSeparator() {
         return argumentSeparator;
     }

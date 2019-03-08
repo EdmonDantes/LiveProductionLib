@@ -233,9 +233,9 @@ public class EquationObject {
      * @param expression Full string expression (Example: "(2x + 3x2 - 8x3) * (3x + 9x2)")
      * @return EquationObject equals $expression
      */
-    public static EquationObject valueOf(String expression) {
+    public static EquationObject valueOf(String expression) throws WrongExpressionException {
         try {
-            EquationObject.expression.execute(expression);
+            EquationObject.expression.calculate(expression);
         } catch (WrongCountOperationArgumentsException | UserMethodException e) {
             System.err.println("Please write developers on email dantes2104@gmail.com");
         }

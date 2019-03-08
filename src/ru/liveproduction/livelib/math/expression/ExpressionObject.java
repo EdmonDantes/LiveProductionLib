@@ -4,41 +4,50 @@ import ru.liveproduction.livelib.utils.GenericUtils;
 
 import java.util.*;
 
+/**
+ * Class for calculate string to your class
+ * @param <T> Your class
+ */
 public class ExpressionObject<T> {
-    protected OperationManager<T> manager;
+    protected OperationManager<T> operationManager;
     protected Class<T> _class;
 
-    public ExpressionObject(OperationManager<T> manager, Class<T> _class) {
-        this.manager = manager;
+    public ExpressionObject(OperationManager<T> operationManager, Class<T> _class) {
+        this.operationManager = operationManager;
         this._class = _class;
     }
 
-    public T execute(String expression) throws WrongCountOperationArgumentsException, UserMethodException {
-        try {
-            LinkedList<Object> polishNotation = PolishNotation.getInstance().createPolishNotation(expression, this.manager, null);
-            Stack<T> argumentsStack = new Stack<>();
+    /**
+     * Method for calculate
+     * @param expression String expression
+     * @return Value with your class
+     * @throws WrongCountOperationArgumentsException Wrong count arguments for your operation
+     * @throws UserMethodException What happened in your operationFunction object
+     */
+    public T calculate(String expression) throws WrongCountOperationArgumentsException, UserMethodException, WrongExpressionException {
+        LinkedList<Object> partsOfPolishNotation = PolishNotation.getInstance().createPolishNotation(expression, this.operationManager, null);
+        Stack<T> argumentsStack = new Stack<>();
 
-            for (Object obj : polishNotation) {
-                if (obj instanceof String) argumentsStack.push(GenericUtils.createGenericFrom(this._class, (String) obj));
-                else {
-                    Trio<Operation<T>, Integer, Integer> tmp = (Trio) obj;
-                    T[] args = GenericUtils.createGenericArray(this._class, tmp.getFirst().getCountOperationArgs());
-                    for (int i = args.length - 1; i > -1 && !argumentsStack.empty(); i--) {
-                        args[i] = argumentsStack.pop();
-                    }
-                    argumentsStack.push(tmp.getFirst().execute(args));
+        for (Object argumentsOrOperation : partsOfPolishNotation) {
+            if (argumentsOrOperation instanceof String)
+                argumentsStack.push(GenericUtils.createGenericFrom(this._class, (String) argumentsOrOperation));
+            else {
+                Trio<Operation<T>, Integer, Integer> operation = (Trio) argumentsOrOperation;
+                T[] args = GenericUtils.createGenericArray(this._class, operation.getFirst().getCountOperationArgs());
+                for (int i = args.length - 1; i > -1 && !argumentsStack.empty(); i--) {
+                    args[i] = argumentsStack.pop();
                 }
+                argumentsStack.push(operation.getFirst().execute(args));
             }
-
-            return argumentsStack.pop();
-        } catch (WrongExpressionForPolishNotationException e) {
-            return null;
         }
+
+        return argumentsStack.pop();
     }
 
-    protected static <T> T executeWithExpressionObject(ExpressionObject<T> obj, String expression) {
+
+    protected static <T> T calculateWithExpressionObject(ExpressionObject<T> obj, String expression) throws WrongExpressionException {
         try {
-            return obj.execute(expression);
+            return obj.calculate(expression);
         } catch (WrongCountOperationArgumentsException | UserMethodException e) {
             System.err.println("Please write to developer");
             e.printStackTrace();
@@ -105,8 +114,13 @@ public class ExpressionObject<T> {
 
     protected static final ExpressionObject<Integer> integerExpressionObject = new ExpressionObject<Integer>(integersManager, Integer.class);
 
-    public static Integer executeInteger(String expression) {
-        return executeWithExpressionObject(integerExpressionObject, expression);
+    /**
+     * Calculate simple integer expression
+     * @param expression String with expression
+     * @return Integer value
+     */
+    public static Integer calculateInteger(String expression) throws WrongExpressionException {
+        return calculateWithExpressionObject(integerExpressionObject, expression);
     }
 
 
@@ -169,7 +183,12 @@ public class ExpressionObject<T> {
 
     protected static final ExpressionObject<Double> doubleExpressionObject = new ExpressionObject<Double>(doublesManager, Double.class);
 
-    public static Double executeDouble(String expression) {
-        return executeWithExpressionObject(doubleExpressionObject, expression);
+    /**
+     * Calculate simple double value
+     * @param expression String with expression
+     * @return Double value
+     */
+    public static Double calculateDouble(String expression) throws WrongExpressionException {
+        return calculateWithExpressionObject(doubleExpressionObject, expression);
     }
 }

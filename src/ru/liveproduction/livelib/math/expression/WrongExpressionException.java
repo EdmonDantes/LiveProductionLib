@@ -1,9 +1,9 @@
 package ru.liveproduction.livelib.math.expression;
 
-public class WrongExpressionForPolishNotationException extends Exception {
+public class WrongExpressionException extends Exception {
     protected String expression;
 
-    public WrongExpressionForPolishNotationException(String expression) {
+    public WrongExpressionException(String expression) {
         this.expression = expression;
     }
 

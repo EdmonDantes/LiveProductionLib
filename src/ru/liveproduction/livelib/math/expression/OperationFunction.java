@@ -1,13 +1,13 @@
 package ru.liveproduction.livelib.math.expression;
 
 /**
- * This interface set action on execute operation
+ * This interface set action on calculate operation
  * @param <K> Your class
  */
 public interface OperationFunction<K> {
 
     /**
-     * Action when execute operation
+     * Action when calculate operation
      * @param args Operation arguments
      * @return New object with class K
      */

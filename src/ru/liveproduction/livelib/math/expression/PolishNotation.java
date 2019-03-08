@@ -10,7 +10,7 @@ public class PolishNotation {
 
     protected PolishNotation(){}
 
-    public <K> LinkedList<Object> createPolishNotation(String string, OperationManager<K> operationManager, Object ignore) throws WrongExpressionForPolishNotationException {
+    public <K> LinkedList<Object> createPolishNotation(String string, OperationManager<K> operationManager, Object ignore) throws WrongExpressionException {
         String expression = string.replace(" ", "");
 
         Stack<Trio<Operation<K>, Integer, String>> operationStack = new Stack<>(); // 1 - Operation, 2 - count args, 3 - string`s synonym in expression
@@ -23,7 +23,7 @@ public class PolishNotation {
 
             if (tmpCharacter == '(') {
                 if (tmpSavePartOfValues.length() > 0) {
-                    throw new WrongExpressionForPolishNotationException(string);
+                    throw new WrongExpressionException(string);
                 }
                 operationStack.push(new Trio<>(null, 0, "("));
             } else if (tmpCharacter == ')') {
@@ -36,10 +36,10 @@ public class PolishNotation {
                     result.addLast(operationStack.pop());
 
                 if (!operationStack.empty()) operationStack.pop();
-                else throw new WrongExpressionForPolishNotationException(string);
+                else throw new WrongExpressionException(string);
             } else {
-                List<Trio<Operation<K>, Integer, Integer>> tmp0 = operationManager.getOperationPriorityAndLastIndexFromString(expression, i);
-                if (tmp0.size() > 0) {
+                List<Trio<Operation<K>, Integer, Integer>> operationSearch = operationManager.getOperationPriorityAndLastIndexFromString(expression, i);
+                if (operationSearch.size() > 0) {
                     boolean leftWord = false;
                     if (tmpSavePartOfValues.length() > 0) {
                         result.addLast(tmpSavePartOfValues.toString());
@@ -48,7 +48,7 @@ public class PolishNotation {
                     }
 
                     Trio<Operation<K>, Integer, Integer> operation = null;
-                    for (Trio<Operation<K>, Integer, Integer> applicant : tmp0) {
+                    for (Trio<Operation<K>, Integer, Integer> applicant : operationSearch) {
                         if (leftWord) {
                             if (applicant.getFirst().getCountOperationArgs() == 1 && applicant.getFirst().haveSuffixForm()) {
                                 operation = applicant;
@@ -62,13 +62,13 @@ public class PolishNotation {
                         }
                     }
                     if (operation == null) {
-                        for (Trio<Operation<K>, Integer, Integer> applicant : tmp0) {
+                        for (Trio<Operation<K>, Integer, Integer> applicant : operationSearch) {
                             if (applicant.getFirst().getCountOperationArgs() > 1) {
                                 operation = applicant;
                                 break;
                             }
                         }
-                        if (operation == null) throw new WrongExpressionForPolishNotationException(string);
+                        if (operation == null) throw new WrongExpressionException(string);
                     }
 
                     while (!operationStack.empty() && operationStack.peek().getThird() != "("
@@ -84,9 +84,9 @@ public class PolishNotation {
 
                     i = operation.getThird() - 1;
                 } else {
-                    int tmp1 = operationManager.isArgumentsSeparator(expression, i);
+                    int separatorSearch = operationManager.isArgumentsSeparator(expression, i);
 
-                    if (tmp1 > -1) {
+                    if (separatorSearch > -1) {
                         if (tmpSavePartOfValues.length() > 0) {
                             result.addLast(tmpSavePartOfValues.toString());
                             tmpSavePartOfValues.setLength(0);
@@ -99,7 +99,7 @@ public class PolishNotation {
                         if (operationStack.peek().getFirst().getCountOperationArgs() > operationStack.peek().getSecond())
                             operationStack.peek().setSecond(operationStack.peek().getSecond() + 1);
 
-                        i = tmp1 - 1;
+                        i = separatorSearch - 1;
                     } else {
                         tmpSavePartOfValues.append(tmpCharacter);
                     }
@@ -110,14 +110,14 @@ public class PolishNotation {
         if (tmpSavePartOfValues.length() > 0) result.addLast(tmpSavePartOfValues.toString());
 
         while (!operationStack.empty()) {
-            if (operationStack.peek().getThird() == "(") throw new WrongExpressionForPolishNotationException(string);
+            if (operationStack.peek().getThird() == "(") throw new WrongExpressionException(string);
             result.addLast(operationStack.pop());
         }
 
        return result;
     }
 
-    public <K> String createPolishNotation(String string, OperationManager<K> operationManager, boolean useTags, String separator) throws WrongExpressionForPolishNotationException {
+    public <K> String createPolishNotation(String string, OperationManager<K> operationManager, boolean useTags, String separator) throws WrongExpressionException {
         LinkedList<Object> result = createPolishNotation(string, operationManager, null);
 
         StringBuilder resultBuilder = new StringBuilder();
@@ -133,11 +133,11 @@ public class PolishNotation {
         return resultBuilder.substring(0, resultBuilder.length() - 1).toString();
     }
 
-    public <K> String createPolishNotation(String string, OperationManager<K> operationManager, boolean useTags) throws WrongExpressionForPolishNotationException {
+    public <K> String createPolishNotation(String string, OperationManager<K> operationManager, boolean useTags) throws WrongExpressionException {
         return createPolishNotation(string, operationManager, useTags, ",");
     }
 
-    public <K> String createPolishNotation(String string, OperationManager<K> operationManager) throws WrongExpressionForPolishNotationException {
+    public <K> String createPolishNotation(String string, OperationManager<K> operationManager) throws WrongExpressionException {
         return createPolishNotation(string, operationManager, false);
     }
 
