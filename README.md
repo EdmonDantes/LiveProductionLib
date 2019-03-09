@@ -31,7 +31,7 @@ int countOperationArgs, OperationFunction<CLASS> operationFunction,
 ```
 or
 ```java
-Operation<CLASS>(String operationTag, Set<String> operationStringSynonyms,
+new Operation<CLASS>(String operationTag, Set<String> operationStringSynonyms,
  int countOperationArgs, OperationFunction<CLASS> operationFunction);
 ```
 **For create operations with 2 arguments use:**
@@ -41,7 +41,7 @@ new Operation<CLASS>(String operationTag, Set<String> operationStringSynonyms,
 ```
 **For create operations with 2 arguments and for 1 string synonym use:**
 ```java
-Operation<CLASS>(String operationTag, String operationStringSynonym,
+new Operation<CLASS>(String operationTag, String operationStringSynonym,
  OperationFunction<CLASS> operationFunction);
 ```
 #### OperationManager
@@ -61,7 +61,7 @@ new OperationManager<CLASS>(new Operation[][]{
 
 *Witch operation added first, it have higher priority*
 ```java
-new OperationManager(new Operation[]{
+new OperationManager<CLASS>(new Operation[]{
         new Operation<CLASS>(...),
         new Operation<CLASS>(...)
 });
@@ -71,7 +71,7 @@ new OperationManager(new Operation[]{
 This class created for fast and easy calculate different string`s expression
 ##### How to use
 ```java
-new ExpressionObject(new OperationManager<CLASS>(...), CLASS.class).calculate(String expression);
+new ExpressionObject<CLASS>(new OperationManager<CLASS>(...), CLASS.class).calculate(String expression);
 ```
 
 or
