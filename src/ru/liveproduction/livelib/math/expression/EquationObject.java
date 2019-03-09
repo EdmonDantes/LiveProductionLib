@@ -218,8 +218,8 @@ public class EquationObject {
         if (tmpVariables.size() == 3) {
             double discriminant = tmpVariables.get(1) * tmpVariables.get(1) - 4 * tmpVariables.get(0) * tmpVariables.get(2);
             if (discriminant >= 0) {
-                result.add((-tmpVariables.get(1) + discriminant) / 2);
-                result.add((-tmpVariables.get(1) - discriminant) / 2);
+                result.add((-tmpVariables.get(1) + Math.sqrt(discriminant)) / 2);
+                result.add((-tmpVariables.get(1) - Math.sqrt(discriminant)) / 2);
             }
         }else if (tmpVariables.size() == 2 && tmpVariables.get(0) != null && tmpVariables.get(1) != null){
             result.add(tmpVariables.get(0) / tmpVariables.get(1));
@@ -235,7 +235,7 @@ public class EquationObject {
      */
     public static EquationObject valueOf(String expression) throws WrongExpressionException {
         try {
-            EquationObject.expression.calculate(expression);
+            return EquationObject.expression.calculate(expression);
         } catch (WrongCountOperationArgumentsException | UserMethodException e) {
             System.err.println("Please write developers on email dantes2104@gmail.com");
         }

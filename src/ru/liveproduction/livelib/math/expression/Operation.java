@@ -73,12 +73,12 @@ public class Operation<K> {
     public Operation(String operationTag, String[] operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction) {
         this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, ";", false);
     }
-    
-    public Operation(String operationTag, List<String> operationStringSynonyms, OperationFunction<K> operationFunction) {
-        this(operationTag, operationStringSynonyms, 2, operationFunction, ";", false);
-    }
 
     public Operation(String operationTag, Set<String> operationStringSynonyms, OperationFunction<K> operationFunction) {
+        this(operationTag, operationStringSynonyms, 2, operationFunction, ";", false);
+    }
+    
+    public Operation(String operationTag, List<String> operationStringSynonyms, OperationFunction<K> operationFunction) {
         this(operationTag, operationStringSynonyms, 2, operationFunction, ";", false);
     }
 
