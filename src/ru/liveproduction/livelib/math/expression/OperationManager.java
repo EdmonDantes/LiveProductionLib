@@ -37,7 +37,7 @@ public class OperationManager<K> {
                     if (synonym.length() > this.maxOperationStringSynonymLength) this.maxOperationStringSynonymLength = synonym.length();
                 }
 
-                if (operationPriority.get(i).get(j).getCountOperationArgs() > 2) {
+                if (operationPriority.get(i).get(j).getCountOperationArgs() > 2 || (operationPriority.get(i).get(j).getCountOperationArgs() == 2 || !operationPriority.get(i).get(j).haveSuffixForm())) {
                     this.allArgumentSeparator.add(operationPriority.get(i).get(j).getArgumentSeparator());
 
                     if (this.maxArgumentSeparatorLength < operationPriority.get(i).get(j).getArgumentSeparator().length()) maxArgumentSeparatorLength = operationPriority.get(i).get(j).getArgumentSeparator().length();
