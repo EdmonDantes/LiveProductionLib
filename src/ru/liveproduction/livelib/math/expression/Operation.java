@@ -50,6 +50,10 @@ public class Operation<K> {
         this(operationTag, Arrays.asList(operationStringSynonyms), countOperationArgs, operationFunction, argumentSeparator, suffixForm);
     }
 
+    public Operation(String operationTag, String operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction, String argumentSeparator, boolean suffixForm) {
+        this(operationTag, Collections.singleton(operationStringSynonyms), countOperationArgs, operationFunction, argumentSeparator, suffixForm);
+    }
+
     public Operation(String operationTag, Set<String> operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction, boolean suffixForm){
         this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, ";", suffixForm);
     }
@@ -62,6 +66,10 @@ public class Operation<K> {
         this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, ";", suffixForm);
     }
 
+    public Operation(String operationTag, String operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction, boolean suffixForm){
+        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, ";", suffixForm);
+    }
+
     public Operation(String operationTag, Set<String> operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction){
         this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, ";", false);
     }
@@ -71,6 +79,10 @@ public class Operation<K> {
     }
 
     public Operation(String operationTag, String[] operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction) {
+        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, ";", false);
+    }
+
+    public Operation(String operationTag, String operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction) {
         this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, ";", false);
     }
 
