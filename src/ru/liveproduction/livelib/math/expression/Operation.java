@@ -54,52 +54,68 @@ public class Operation<K> {
         this(operationTag, Collections.singleton(operationStringSynonyms), countOperationArgs, operationFunction, argumentSeparator, suffixForm);
     }
 
+    public Operation(String operationTag, Set<String> operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction, String argumentSeparator){
+        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, argumentSeparator, false);
+    }
+
+    public Operation(String operationTag, List<String> operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction, String argumentSeparator) {
+        this(operationTag, new TreeSet<String>(operationStringSynonyms), countOperationArgs, operationFunction, argumentSeparator, false);
+    }
+
+    public Operation(String operationTag, String[] operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction, String argumentSeparator) {
+        this(operationTag, Arrays.asList(operationStringSynonyms), countOperationArgs, operationFunction, argumentSeparator, false);
+    }
+
+    public Operation(String operationTag, String operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction, String argumentSeparator) {
+        this(operationTag, Collections.singleton(operationStringSynonyms), countOperationArgs, operationFunction, argumentSeparator, false);
+    }
+
     public Operation(String operationTag, Set<String> operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction, boolean suffixForm){
-        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, ";", suffixForm);
+        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, null, suffixForm);
     }
 
     public Operation(String operationTag, List<String> operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction, boolean suffixForm){
-        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, ";", suffixForm);
+        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, null, suffixForm);
     }
 
     public Operation(String operationTag, String[] operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction, boolean suffixForm){
-        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, ";", suffixForm);
+        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, null, suffixForm);
     }
 
     public Operation(String operationTag, String operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction, boolean suffixForm){
-        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, ";", suffixForm);
+        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, null, suffixForm);
     }
 
     public Operation(String operationTag, Set<String> operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction){
-        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, ";", false);
+        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, null, false);
     }
 
     public Operation(String operationTag, List<String> operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction){
-        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, ";", false);
+        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, null, false);
     }
 
     public Operation(String operationTag, String[] operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction) {
-        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, ";", false);
+        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, null, false);
     }
 
     public Operation(String operationTag, String operationStringSynonyms, int countOperationArgs, OperationFunction<K> operationFunction) {
-        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, ";", false);
+        this(operationTag, operationStringSynonyms, countOperationArgs, operationFunction, null, false);
     }
 
     public Operation(String operationTag, Set<String> operationStringSynonyms, OperationFunction<K> operationFunction) {
-        this(operationTag, operationStringSynonyms, 2, operationFunction, ";", false);
+        this(operationTag, operationStringSynonyms, 2, operationFunction, null, false);
     }
     
     public Operation(String operationTag, List<String> operationStringSynonyms, OperationFunction<K> operationFunction) {
-        this(operationTag, operationStringSynonyms, 2, operationFunction, ";", false);
+        this(operationTag, operationStringSynonyms, 2, operationFunction, null, false);
     }
 
     public Operation(String operationTag, String[] operationStringSynonyms, OperationFunction<K> operationFunction) {
-        this(operationTag, operationStringSynonyms, 2, operationFunction, ";", false);
+        this(operationTag, operationStringSynonyms, 2, operationFunction, null, false);
     }
 
     public Operation(String operationTag, String operationStringSynonym, OperationFunction<K> operationFunction) {
-        this(operationTag, Collections.singleton(operationStringSynonym), 2, operationFunction, ";", false);
+        this(operationTag, Collections.singleton(operationStringSynonym), 2, operationFunction, null, false);
     }
 
     /**
@@ -223,5 +239,9 @@ public class Operation<K> {
 
     public boolean haveSuffixForm() {
         return suffixForm;
+    }
+
+    public boolean haveArgumentSeparator() {
+        return argumentSeparator != null;
     }
 }
