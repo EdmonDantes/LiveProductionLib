@@ -3,7 +3,7 @@ Copyright © 2019 Ilya Loginov. All rights reserved.
 Please email dantes2104@gmail.com if you would like permission to do something with the contents of this repository
 */
 
-package ru.liveproduction.livelib.math.expression;
+package ru.liveproduction.livelib.math.expression2;
 
 import java.util.*;
 
@@ -38,9 +38,18 @@ public class OperationManager<K> {
                 }
 
                 if (operationPriority.get(i).get(j).haveArgumentSeparator() && (operationPriority.get(i).get(j).getCountOperationArgs() > 2 || (operationPriority.get(i).get(j).getCountOperationArgs() == 2 || !operationPriority.get(i).get(j).haveSuffixForm()))) {
-                    this.allArgumentSeparator.add(operationPriority.get(i).get(j).getArgumentSeparator());
-
-                    if (this.maxArgumentSeparatorLength < operationPriority.get(i).get(j).getArgumentSeparator().length()) maxArgumentSeparatorLength = operationPriority.get(i).get(j).getArgumentSeparator().length();
+                    String[] separators = operationPriority.get(i).get(j).argumentsSeparator;
+                    String defaultSeparator = operationPriority.get(i).get(j).defaultArgumentSeparator;
+                    if (separators != null && separators.length > 0) {
+                        this.allArgumentSeparator.addAll(Arrays.asList(separators));
+                        for (String sep : separators)
+                            if (this.maxArgumentSeparatorLength < sep.length())
+                                this.maxArgumentSeparatorLength = sep.length();
+                    }
+                    if (defaultSeparator != null && defaultSeparator.length() > 0) {
+                        this.allArgumentSeparator.add(defaultSeparator);
+                        if (this.maxArgumentSeparatorLength < defaultSeparator.length()) this.maxArgumentSeparatorLength = defaultSeparator.length();
+                    }
                 }
             }
         }
@@ -82,8 +91,8 @@ public class OperationManager<K> {
 
     /**
      * Get operation from tag
-     * @param operationTag Operation`s tag
-     * @return Operation and operation priority
+     * @param operationTag Operator`s tag
+     * @return Operator and operation priority
      */
     public Pair<Operation<K>, Integer> getOperationFromTag(String operationTag) {
         for (Map.Entry<Operation<K>, Integer> pair : operationPriority.entrySet()) {
@@ -104,6 +113,10 @@ public class OperationManager<K> {
             if (pair.getFirst().equals(stringSynonym)) result.add(new Pair<Operation<K>, Integer>(pair.getSecond(), operationPriority.get(pair.getSecond())));
         }
 
+        result.sort((o1, o2) -> Boolean.compare(o1.getFirst().isFunction(), o2.getFirst().isFunction())
+                | o1.getSecond().compareTo(o2.getSecond())
+                | -Integer.compare(o1.getFirst().getCountOperationArgs(), o2.getFirst().getCountOperationArgs()));
+
         return result;
     }
 
@@ -111,7 +124,7 @@ public class OperationManager<K> {
      * Return operation for this string`s synonym and count arguments
      * @param stringSynonym String`s synonym
      * @param countArgs Count of arguments
-     * @return Operation and operation priority
+     * @return Operator and operation priority
      */
     public Pair<Operation<K>, Integer> getOperationFromStringSynonym(String stringSynonym, int countArgs) {
         for (Pair<Operation<K>, Integer> pair : getOperationFromStringSynonym(stringSynonym)) {
@@ -126,7 +139,7 @@ public class OperationManager<K> {
      * @param startIndex Start index
      * @param lastIndex Last index. (Search will be while INDEX <= lastIndex)
      * @param countArgs Count of arguments
-     * @return Operation, priority and last index of string synonym in interval
+     * @return Operator, priority and last index of string synonym in interval
      */
     public Trio<Operation<K>, Integer, Integer> getOperationPriorityAndLastIndexFromString(String str, int startIndex, int lastIndex, int countArgs) {
         Pair<Operation<K>, Integer> maxLengthOperationStringSynonyms = null;
@@ -158,6 +171,10 @@ public class OperationManager<K> {
                 if (pair.getFirst().equals(tmp)) result.add(new Trio<>(pair.getSecond(), operationPriority.get(pair.getSecond()), i));
             }
         }
+
+        result.sort((o1, o2) -> Boolean.compare(o1.getFirst().isFunction(), o2.getFirst().isFunction())
+                | o1.getSecond().compareTo(o2.getSecond())
+                | -Integer.compare(o1.getFirst().getCountOperationArgs(), o2.getFirst().getCountOperationArgs()));
 
         return result;
     }
@@ -208,8 +225,8 @@ public class OperationManager<K> {
 
     /**
      * Execute operation
-     * @param operationTag Operation`s tag
-     * @param args Operation`s arguments
+     * @param operationTag Operator`s tag
+     * @param args Operator`s arguments
      * @return New value
      * @throws WrongCountOperationArgumentsException
      * @throws UserMethodException

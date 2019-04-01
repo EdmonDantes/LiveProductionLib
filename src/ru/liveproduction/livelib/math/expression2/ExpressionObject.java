@@ -3,11 +3,12 @@ Copyright © 2019 Ilya Loginov. All rights reserved.
 Please email dantes2104@gmail.com if you would like permission to do something with the contents of this repository
 */
 
-package ru.liveproduction.livelib.math.expression;
+package ru.liveproduction.livelib.math.expression2;
 
 import ru.liveproduction.livelib.utils.GenericUtils;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.Stack;
 
 /**
  * Class for calculate string to your class
@@ -46,7 +47,7 @@ public class ExpressionObject<T> {
             }
         }
 
-        return argumentsStack.pop();
+        return argumentsStack.empty() ? GenericUtils.createGenericFrom(_class, "0") : argumentsStack.pop();
     }
 
 
@@ -60,14 +61,14 @@ public class ExpressionObject<T> {
         }
     }
 
-    protected static final OperationManager<Integer> integersManager = new OperationManager<>(new Operation[][]{
+    public static final OperationManager<Integer> integersManager = new OperationManager<>(new Operation[][]{
             new Operation[] {
                     new Operation<Integer>("NOT", new String[]{"-", "-", "−"}, 1, new OperationFunction<Integer>() {
                         @Override
                         public Integer execute(Integer[] args) {
                             return -args[0];
                         }
-                    })
+                    }, false)
             },
             new Operation[] {
                     new Operation<Integer>("LOG", new String[]{"log", "lg", "l"}, new OperationFunction<Integer>() {
@@ -129,14 +130,22 @@ public class ExpressionObject<T> {
     }
 
 
-    protected static final OperationManager<Double> doublesManager = new OperationManager<>(new Operation[][]{
+    public static final OperationManager<Double> doublesManager = new OperationManager<>(new Operation[][]{
+            new Operation[] {
+                    new Operation<Double>("DIVF", new String[]{"div"}, 2, new OperationFunction<Double>() {
+                        @Override
+                        public Double execute(Double[] args) {
+                            return args[0] / args[1];
+                        }
+                    }, null, ";", false, true)
+            },
             new Operation[] {
                     new Operation<Double>("NOT", new String[]{"-", "-", "−"}, 1, new OperationFunction<Double>() {
                         @Override
                         public Double execute(Double[] args) {
                             return -args[0];
                         }
-                    })
+                    }, false)
             },
             new Operation[] {
                     new Operation<Double>("LOG", new String[]{"log", "lg", "l"}, new OperationFunction<Double>() {
