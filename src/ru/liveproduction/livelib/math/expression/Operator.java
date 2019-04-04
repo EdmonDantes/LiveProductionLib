@@ -13,126 +13,126 @@ import ru.liveproduction.livelib.math.expression2.WrongCountOperationArgumentsEx
 import java.util.*;
 
 public class Operator<T> {
-    protected String operationTag;
-    protected Set<String> operatorStringSynonyms;
+    protected String tag;
+    protected Set<String> stringSynonyms;
     protected int maxLengthOfStringSynonyms;
-    protected int countOperationArgs;
+    protected int countArgs;
     protected String[] argumentsSeparator;
     protected String defaultArgumentSeparator;
     protected Algorithm<T> algorithm;
     protected boolean haveSuffixForm;
 
-    public Operator(String operationTag, Set<String> operationStringSynonyms, int countOperationArgs, Algorithm<T> algorithm, String[] argumentSeparator, String defaultArgumentSeparator, boolean haveSuffixForm) {
-        this.operationTag = operationTag;
-        this.operatorStringSynonyms = operationStringSynonyms;
+    public Operator(String tag, Set<String> operationStringSynonyms, int countArgs, Algorithm<T> algorithm, String[] argumentSeparator, String defaultArgumentSeparator, boolean haveSuffixForm) {
+        this.tag = tag;
+        this.stringSynonyms = operationStringSynonyms;
         this.maxLengthOfStringSynonyms = 0;
         for (String synonym : operationStringSynonyms) {
             if (synonym.length() > this.maxLengthOfStringSynonyms) this.maxLengthOfStringSynonyms = synonym.length();
         }
-        this.countOperationArgs = countOperationArgs;
+        this.countArgs = countArgs;
         this.algorithm = algorithm;
         this.argumentsSeparator = argumentSeparator;
         this.defaultArgumentSeparator = defaultArgumentSeparator;
         this.haveSuffixForm = haveSuffixForm;
     }
 
-    public Operator(String operationTag, List<String> operationStringSynonyms, int countOperationArgs, Algorithm<T> algorithm, String[] argumentSeparator, String defaultArgumentSeparator, boolean haveSuffixForm) {
-        this(operationTag, new TreeSet<String>(operationStringSynonyms), countOperationArgs, algorithm, argumentSeparator, defaultArgumentSeparator, haveSuffixForm);
+    public Operator(String tag, List<String> operationStringSynonyms, int countArgs, Algorithm<T> algorithm, String[] argumentSeparator, String defaultArgumentSeparator, boolean haveSuffixForm) {
+        this(tag, new TreeSet<String>(operationStringSynonyms), countArgs, algorithm, argumentSeparator, defaultArgumentSeparator, haveSuffixForm);
     }
 
-    public Operator(String operationTag, String[] operationStringSynonyms, int countOperationArgs, Algorithm<T> algorithm, String[] argumentSeparator, String defaultArgumentSeparator, boolean haveSuffixForm) {
-        this(operationTag, Arrays.asList(operationStringSynonyms), countOperationArgs, algorithm, argumentSeparator, defaultArgumentSeparator, haveSuffixForm);
+    public Operator(String tag, String[] operationStringSynonyms, int countArgs, Algorithm<T> algorithm, String[] argumentSeparator, String defaultArgumentSeparator, boolean haveSuffixForm) {
+        this(tag, Arrays.asList(operationStringSynonyms), countArgs, algorithm, argumentSeparator, defaultArgumentSeparator, haveSuffixForm);
     }
 
-    public Operator(String operationTag, String operationStringSynonyms, int countOperationArgs, Algorithm<T> algorithm, String[] argumentSeparator, String defaultArgumentSeparator, boolean haveSuffixForm) {
-        this(operationTag, Collections.singleton(operationStringSynonyms), countOperationArgs, algorithm, argumentSeparator, defaultArgumentSeparator, haveSuffixForm);
+    public Operator(String tag, String operationStringSynonyms, int countArgs, Algorithm<T> algorithm, String[] argumentSeparator, String defaultArgumentSeparator, boolean haveSuffixForm) {
+        this(tag, Collections.singleton(operationStringSynonyms), countArgs, algorithm, argumentSeparator, defaultArgumentSeparator, haveSuffixForm);
     }
 
-    public Operator(String operationTag, Set<String> operationStringSynonyms, int countOperationArgs, Algorithm<T> algorithm, String[] argumentSeparator, String defaultArgumentSeparator) {
-        this(operationTag, operationStringSynonyms, countOperationArgs, algorithm, argumentSeparator, defaultArgumentSeparator, true);
+    public Operator(String tag, Set<String> operationStringSynonyms, int countArgs, Algorithm<T> algorithm, String[] argumentSeparator, String defaultArgumentSeparator) {
+        this(tag, operationStringSynonyms, countArgs, algorithm, argumentSeparator, defaultArgumentSeparator, true);
     }
 
-    public Operator(String operationTag, List<String> operationStringSynonyms, int countOperationArgs, Algorithm<T> algorithm, String[] argumentSeparator, String defaultArgumentSeparator) {
-        this(operationTag, operationStringSynonyms, countOperationArgs, algorithm, argumentSeparator, defaultArgumentSeparator, true);
+    public Operator(String tag, List<String> operationStringSynonyms, int countArgs, Algorithm<T> algorithm, String[] argumentSeparator, String defaultArgumentSeparator) {
+        this(tag, operationStringSynonyms, countArgs, algorithm, argumentSeparator, defaultArgumentSeparator, true);
     }
 
-    public Operator(String operationTag, String[] operationStringSynonyms, int countOperationArgs, Algorithm<T> algorithm, String[] argumentSeparator, String defaultArgumentSeparator) {
-        this(operationTag, operationStringSynonyms, countOperationArgs, algorithm, argumentSeparator, defaultArgumentSeparator, true);
+    public Operator(String tag, String[] operationStringSynonyms, int countArgs, Algorithm<T> algorithm, String[] argumentSeparator, String defaultArgumentSeparator) {
+        this(tag, operationStringSynonyms, countArgs, algorithm, argumentSeparator, defaultArgumentSeparator, true);
     }
 
-    public Operator(String operationTag, String operationStringSynonyms, int countOperationArgs, Algorithm<T> algorithm, String[] argumentSeparator, String defaultArgumentSeparator) {
-        this(operationTag, operationStringSynonyms, countOperationArgs, algorithm, argumentSeparator, defaultArgumentSeparator, true);
+    public Operator(String tag, String operationStringSynonyms, int countArgs, Algorithm<T> algorithm, String[] argumentSeparator, String defaultArgumentSeparator) {
+        this(tag, operationStringSynonyms, countArgs, algorithm, argumentSeparator, defaultArgumentSeparator, true);
     }
 
-    public Operator(String operationTag, Set<String> operationStringSynonyms, int countOperationArgs, Algorithm<T> algorithm, String defaultArgumentSeparator) {
-        this(operationTag, operationStringSynonyms, countOperationArgs, algorithm, new String[0], defaultArgumentSeparator, true);
+    public Operator(String tag, Set<String> operationStringSynonyms, int countArgs, Algorithm<T> algorithm, String defaultArgumentSeparator) {
+        this(tag, operationStringSynonyms, countArgs, algorithm, new String[0], defaultArgumentSeparator, true);
     }
 
-    public Operator(String operationTag, List<String> operationStringSynonyms, int countOperationArgs, Algorithm<T> algorithm, String defaultArgumentSeparator) {
-        this(operationTag, operationStringSynonyms, countOperationArgs, algorithm, new String[0], defaultArgumentSeparator, true);
+    public Operator(String tag, List<String> operationStringSynonyms, int countArgs, Algorithm<T> algorithm, String defaultArgumentSeparator) {
+        this(tag, operationStringSynonyms, countArgs, algorithm, new String[0], defaultArgumentSeparator, true);
     }
 
-    public Operator(String operationTag, String[] operationStringSynonyms, int countOperationArgs, Algorithm<T> algorithm, String defaultArgumentSeparator) {
-        this(operationTag, operationStringSynonyms, countOperationArgs, algorithm, new String[0], defaultArgumentSeparator, true);
+    public Operator(String tag, String[] operationStringSynonyms, int countArgs, Algorithm<T> algorithm, String defaultArgumentSeparator) {
+        this(tag, operationStringSynonyms, countArgs, algorithm, new String[0], defaultArgumentSeparator, true);
     }
 
-    public Operator(String operationTag, String operationStringSynonyms, int countOperationArgs, Algorithm<T> algorithm, String defaultArgumentSeparator) {
-        this(operationTag, operationStringSynonyms, countOperationArgs, algorithm, new String[0], defaultArgumentSeparator, true);
+    public Operator(String tag, String operationStringSynonyms, int countArgs, Algorithm<T> algorithm, String defaultArgumentSeparator) {
+        this(tag, operationStringSynonyms, countArgs, algorithm, new String[0], defaultArgumentSeparator, true);
     }
 
-    public Operator(String operationTag, Set<String> operationStringSynonyms, int countOperationArgs, Algorithm<T> algorithm, String defaultArgumentSeparator, boolean haveSuffixForm) {
-        this(operationTag, operationStringSynonyms, countOperationArgs, algorithm, new String[0], defaultArgumentSeparator, haveSuffixForm);
+    public Operator(String tag, Set<String> operationStringSynonyms, int countArgs, Algorithm<T> algorithm, String defaultArgumentSeparator, boolean haveSuffixForm) {
+        this(tag, operationStringSynonyms, countArgs, algorithm, new String[0], defaultArgumentSeparator, haveSuffixForm);
     }
 
-    public Operator(String operationTag, List<String> operationStringSynonyms, int countOperationArgs, Algorithm<T> algorithm, String defaultArgumentSeparator, boolean haveSuffixForm) {
-        this(operationTag, new TreeSet<String>(operationStringSynonyms), countOperationArgs, algorithm, new String[0], defaultArgumentSeparator, haveSuffixForm);
+    public Operator(String tag, List<String> operationStringSynonyms, int countArgs, Algorithm<T> algorithm, String defaultArgumentSeparator, boolean haveSuffixForm) {
+        this(tag, new TreeSet<String>(operationStringSynonyms), countArgs, algorithm, new String[0], defaultArgumentSeparator, haveSuffixForm);
     }
 
-    public Operator(String operationTag, String[] operationStringSynonyms, int countOperationArgs, Algorithm<T> algorithm, String defaultArgumentSeparator, boolean haveSuffixForm) {
-        this(operationTag, Arrays.asList(operationStringSynonyms), countOperationArgs, algorithm, new String[0], defaultArgumentSeparator, haveSuffixForm);
+    public Operator(String tag, String[] operationStringSynonyms, int countArgs, Algorithm<T> algorithm, String defaultArgumentSeparator, boolean haveSuffixForm) {
+        this(tag, Arrays.asList(operationStringSynonyms), countArgs, algorithm, new String[0], defaultArgumentSeparator, haveSuffixForm);
     }
 
-    public Operator(String operationTag, String operationStringSynonyms, int countOperationArgs, Algorithm<T> algorithm, String defaultArgumentSeparator, boolean haveSuffixForm) {
-        this(operationTag, Collections.singleton(operationStringSynonyms), countOperationArgs, algorithm, new String[0], defaultArgumentSeparator, haveSuffixForm);
+    public Operator(String tag, String operationStringSynonyms, int countArgs, Algorithm<T> algorithm, String defaultArgumentSeparator, boolean haveSuffixForm) {
+        this(tag, Collections.singleton(operationStringSynonyms), countArgs, algorithm, new String[0], defaultArgumentSeparator, haveSuffixForm);
     }
 
-    public Operator(String operationTag, Set<String> operationStringSynonyms, Algorithm<T> algorithm, boolean haveSuffixForm) {
-        this(operationTag, operationStringSynonyms, 2, algorithm, new String[0], ";", haveSuffixForm);
+    public Operator(String tag, Set<String> operationStringSynonyms, Algorithm<T> algorithm, boolean haveSuffixForm) {
+        this(tag, operationStringSynonyms, 2, algorithm, new String[0], ";", haveSuffixForm);
     }
 
-    public Operator(String operationTag, List<String> operationStringSynonyms, Algorithm<T> algorithm, boolean haveSuffixForm) {
-        this(operationTag, operationStringSynonyms, 2, algorithm, new String[0], ";", haveSuffixForm);
+    public Operator(String tag, List<String> operationStringSynonyms, Algorithm<T> algorithm, boolean haveSuffixForm) {
+        this(tag, operationStringSynonyms, 2, algorithm, new String[0], ";", haveSuffixForm);
     }
 
-    public Operator(String operationTag, String[] operationStringSynonyms, Algorithm<T> algorithm, boolean haveSuffixForm) {
-        this(operationTag, operationStringSynonyms, 2, algorithm, new String[0], ";", haveSuffixForm);
+    public Operator(String tag, String[] operationStringSynonyms, Algorithm<T> algorithm, boolean haveSuffixForm) {
+        this(tag, operationStringSynonyms, 2, algorithm, new String[0], ";", haveSuffixForm);
     }
 
-    public Operator(String operationTag, String operationStringSynonyms, Algorithm<T> algorithm, boolean haveSuffixForm) {
-        this(operationTag, operationStringSynonyms, 2, algorithm, new String[0], ";", haveSuffixForm);
+    public Operator(String tag, String operationStringSynonyms, Algorithm<T> algorithm, boolean haveSuffixForm) {
+        this(tag, operationStringSynonyms, 2, algorithm, new String[0], ";", haveSuffixForm);
     }
 
-    public Operator(String operationTag, Set<String> operationStringSynonyms, Algorithm<T> algorithm) {
-        this(operationTag, operationStringSynonyms, 2, algorithm, new String[0], ";", true);
+    public Operator(String tag, Set<String> operationStringSynonyms, Algorithm<T> algorithm) {
+        this(tag, operationStringSynonyms, 2, algorithm, new String[0], ";", true);
     }
 
-    public Operator(String operationTag, List<String> operationStringSynonyms, Algorithm<T> algorithm) {
-        this(operationTag, operationStringSynonyms, 2, algorithm, new String[0], ";", true);
+    public Operator(String tag, List<String> operationStringSynonyms, Algorithm<T> algorithm) {
+        this(tag, operationStringSynonyms, 2, algorithm, new String[0], ";", true);
     }
 
-    public Operator(String operationTag, String[] operationStringSynonyms, Algorithm<T> algorithm) {
-        this(operationTag, operationStringSynonyms, 2, algorithm, new String[0], ";", true);
+    public Operator(String tag, String[] operationStringSynonyms, Algorithm<T> algorithm) {
+        this(tag, operationStringSynonyms, 2, algorithm, new String[0], ";", true);
     }
 
-    public Operator(String operationTag, String operationStringSynonyms, Algorithm<T> algorithm) {
-        this(operationTag, operationStringSynonyms, 2, algorithm, new String[0], ";", true);
+    public Operator(String tag, String operationStringSynonyms, Algorithm<T> algorithm) {
+        this(tag, operationStringSynonyms, 2, algorithm, new String[0], ";", true);
     }
 
     /**
      * @return Operator tag
      */
     public String getTag() {
-        return operationTag;
+        return tag;
     }
 
 
@@ -142,7 +142,7 @@ public class Operator<T> {
      * @return True if this operation have this stringSynonym, else False
      */
     public boolean haveStringSynonym(String stringSynonym) {
-        return operatorStringSynonyms.contains(stringSynonym);
+        return stringSynonyms.contains(stringSynonym);
     }
 
     /**
@@ -219,8 +219,8 @@ public class Operator<T> {
     /**
      * @return Get count operation`s arguments
      */
-    public int getCountOperationArgs() {
-        return countOperationArgs;
+    public int getCountArgs() {
+        return countArgs;
     }
 
     /**
@@ -242,13 +242,13 @@ public class Operator<T> {
      * @throws UserMethodException
      */
     public T execute(T[] args) throws WrongCountOperationArgumentsException, UserMethodException {
-        if (args.length == this.countOperationArgs) {
+        if (args.length == this.countArgs) {
             try {
                 return algorithm.execute(args);
             } catch (Throwable e) {
-                throw new UserMethodException(operationTag, countOperationArgs, e);
+                throw new UserMethodException(tag, countArgs, e);
             }
-        } else throw new WrongCountOperationArgumentsException(this.countOperationArgs, args.length);
+        } else throw new WrongCountOperationArgumentsException(this.countArgs, args.length);
     }
 
     public boolean haveSuffixForm() {

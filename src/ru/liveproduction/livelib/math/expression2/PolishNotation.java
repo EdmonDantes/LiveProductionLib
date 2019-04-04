@@ -202,12 +202,12 @@ public class PolishNotation {
 //                    Trio<Operator<K>, Integer, Integer> operation = null;
 //                    for (Trio<Operator<K>, Integer, Integer> applicant : operationSearch) {
 //                        if (leftWord) {
-//                            if (applicant.getFirst().getCountOperationArgs() == 1 && applicant.getFirst().haveSuffixForm()) {
+//                            if (applicant.getFirst().getCountArgs() == 1 && applicant.getFirst().haveSuffixForm()) {
 //                                operation = applicant;
 //                                break;
 //                            }
 //                        } else {
-//                            if (!applicant.getFirst().haveSuffixForm() && applicant.getFirst().getCountOperationArgs() == 1) {
+//                            if (!applicant.getFirst().haveSuffixForm() && applicant.getFirst().getCountArgs() == 1) {
 //                                operation = applicant;
 //                                break;
 //                            }
@@ -215,7 +215,7 @@ public class PolishNotation {
 //                    }
 //                    if (operation == null) {
 //                        for (Trio<Operator<K>, Integer, Integer> applicant : operationSearch) {
-//                            if (applicant.getFirst().getCountOperationArgs() > 1) {
+//                            if (applicant.getFirst().getCountArgs() > 1) {
 //                                operation = applicant;
 //                                break;
 //                            }
@@ -224,7 +224,7 @@ public class PolishNotation {
 //                    }
 //
 //                    while (!operationStack.empty() && !operationStack.peek().getThird().equals("(")
-//                            && operationStack.peek().getFirst().getCountOperationArgs() <= operationStack.peek().getSecond()
+//                            && operationStack.peek().getFirst().getCountArgs() <= operationStack.peek().getSecond()
 //                            && operationManager.getOperationFromTag(operationStack.peek().getFirst().getOperationTag()).getSecond() <= operation.getSecond())
 //                        result.addLast(operationStack.pop());
 //
@@ -244,12 +244,12 @@ public class PolishNotation {
 //                            tmpSavePartOfValues.setLength(0);
 //                        }
 //
-//                        while (!operationStack.empty() && operationStack.peek().getFirst().getCountOperationArgs() <= operationStack.peek().getSecond()
+//                        while (!operationStack.empty() && operationStack.peek().getFirst().getCountArgs() <= operationStack.peek().getSecond()
 //                                && !operationStack.peek().getThird().equals("(")) {
 //                            result.addLast(operationStack.pop());
 //                        }
 //
-//                        if (!operationStack.empty() && operationStack.peek().getFirst().getCountOperationArgs() > operationStack.peek().getSecond())
+//                        if (!operationStack.empty() && operationStack.peek().getFirst().getCountArgs() > operationStack.peek().getSecond())
 //                            operationStack.peek().setSecond(operationStack.peek().getSecond() + 1);
 //
 //                        i = separatorSearch - 1;

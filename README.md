@@ -13,8 +13,8 @@ For operations with classes
 ##### How to use
 **Constructor with maximum arguments:**
 ```java
-new Operation<CLASS>(String operationTag, Set<String> operationStringSynonyms,
- int countOperationArgs, OperationFunction<CLASS> operationFunction,
+new Operation<CLASS>(String tag, Set<String> operationStringSynonyms,
+ int countArgs, OperationFunction<CLASS> operationFunction,
   String argumentSeparator, boolean suffixForm);
 ```
 *You can use ``List<String>`` or ``String[]`` in ``operationStringSynonyms``*
@@ -25,23 +25,23 @@ new Operation<CLASS>(String operationTag, Set<String> operationStringSynonyms,
 
 **For create operations with 1 or 2 arguments use:**
 ```java
-new Operation<CLASS>(String operationTag, Set<String> operationStringSynonyms, 
-int countOperationArgs, OperationFunction<CLASS> operationFunction,
+new Operation<CLASS>(String tag, Set<String> operationStringSynonyms, 
+int countArgs, OperationFunction<CLASS> operationFunction,
  boolean suffixForm);
 ```
 or
 ```java
-new Operation<CLASS>(String operationTag, Set<String> operationStringSynonyms,
- int countOperationArgs, OperationFunction<CLASS> operationFunction);
+new Operation<CLASS>(String tag, Set<String> operationStringSynonyms,
+ int countArgs, OperationFunction<CLASS> operationFunction);
 ```
 **For create operations with 2 arguments use:**
 ```java
-new Operation<CLASS>(String operationTag, Set<String> operationStringSynonyms,
+new Operation<CLASS>(String tag, Set<String> operationStringSynonyms,
  OperationFunction<CLASS> operationFunction);
 ```
 **For create operations with 2 arguments and for 1 string synonym use:**
 ```java
-new Operation<CLASS>(String operationTag, String operationStringSynonym,
+new Operation<CLASS>(String tag, String operationStringSynonym,
  OperationFunction<CLASS> operationFunction);
 ```
 #### OperationManager
