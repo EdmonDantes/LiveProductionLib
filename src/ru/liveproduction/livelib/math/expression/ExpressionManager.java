@@ -282,7 +282,7 @@ public class ExpressionManager<T> {
         }
 
         public OperatorWait(List<Function<T>> functions, int countArguments, Object ignore) {
-            this.operators = new ArrayList<>();
+            this.operators = new LinkedList<>();
             for (Function<T> func : functions) {
                 operators.add(new AbstractMap.SimpleEntry<>(func, Integer.MAX_VALUE));
             }
@@ -389,14 +389,16 @@ public class ExpressionManager<T> {
                     tmpStack.add(new OperatorWait<>());
                 }
             } else if (tmpChar == ')'){
+                boolean lastArg = false;
                 if (tmpSavePartOfValues.length() > 0) {
                     result.addLast(tmpSavePartOfValues.toString());
                     tmpSavePartOfValues.setLength(0);
+                    lastArg = true;
                 }
 
                 while (!tmpStack.empty() && !tmpStack.peek().isOpenBracket()) {
                     OperatorWait<T> wait = tmpStack.pop();
-                    wait.addLastArg();
+                    if (lastArg) wait.addLastArg();
                     result.addLast(wait.get());
                 }
 
@@ -407,8 +409,6 @@ public class ExpressionManager<T> {
                     result.addLast(wait.get());
                 }
             } else {
-
-
                 List<Map.Entry<Map.Entry<Operator<T>, Integer>, Integer>> operator = getOperationPriorityAndLastIndexFromString(expression, i);
                 if (operator.size() > 0) {
                     boolean leftWord = false;
@@ -419,7 +419,14 @@ public class ExpressionManager<T> {
                         leftWord = true;
                     }
 
-                    
+                    List<Map.Entry<Operator<T>, Integer>> list = new LinkedList<>();
+                    for (Map.Entry<Map.Entry<Operator<T>,Integer>, Integer> op : operator) {
+                        list.add(op.getKey());
+                    }
+
+                    while ()
+
+                    tmpStack.add(new OperatorWait<>(list, leftWord ? 1 : 0));
                 }
             }
         }
